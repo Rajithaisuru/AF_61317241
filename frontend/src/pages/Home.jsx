@@ -1,8 +1,62 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { MapContainer, TileLayer } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+function MapController({ searchTerm, region, countries }) {
+  const map = useMap();
+
+  // Region coordinates for navigation
+  const regionCoordinates = {
+    Africa: [1.0, 21.0, 3], // [lat, lng, zoom]
+    Americas: [15.0, -80.0, 3],
+    Asia: [30.0, 100.0, 3],
+    Europe: [50.0, 15.0, 4],
+    Oceania: [-25.0, 135.0, 4],
+    Antarctica: [-80.0, 0.0, 2],
+  };
+
+  useEffect(() => {
+    if (!map) {
+      console.log('Map not initialized');
+      return;
+    }
+
+    console.log('MapController: searchTerm=', searchTerm, 'region=', region);
+
+    if (searchTerm) {
+      const matchedCountry = countries.find(country =>
+        country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      console.log('Matched country:', matchedCountry);
+
+      if (matchedCountry && matchedCountry.latlng) {
+        const [lat, lng] = matchedCountry.latlng;
+        if (isFinite(lat) && isFinite(lng)) {
+          console.log(`Navigating to ${matchedCountry.name.common}: [${lat}, ${lng}]`);
+          map.setView([lat, lng], 5);
+        } else {
+          console.log('Invalid latlng:', matchedCountry.latlng);
+          map.setView([0, 0], 2);
+        }
+      } else {
+        console.log('No valid country match or missing latlng');
+        map.setView([0, 0], 2);
+      }
+    } else if (region && regionCoordinates[region]) {
+      const [lat, lng, zoom] = regionCoordinates[region];
+      console.log(`Navigating to region ${region}: [${lat}, ${lng}], zoom=${zoom}`);
+      map.setView([lat, lng], zoom);
+    } else {
+      console.log('Resetting to world view');
+      map.setView([0, 0], 2);
+    }
+  }, [searchTerm, region, countries, map]);
+
+  return null;
+}
 
 function Home() {
   const [countries, setCountries] = useState([]);
@@ -13,13 +67,31 @@ function Home() {
   const [favorites, setFavorites] = useState([]);
   const token = localStorage.getItem('token');
 
+  // Debounce search input
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func(...args), wait);
+    };
+  };
+
+  const handleSearch = debounce((value) => {
+    setSearchTerm(value);
+  }, 300);
+
   useEffect(() => {
     const fetchCountries = async () => {
       try {
-        const response = await axios.get('https://restcountries.com/v3.1/all?fields=name,cca2,flags,region,population,capital,languages');
-        const sortedCountries = response.data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+        const response = await axios.get(
+          'https://restcountries.com/v3.1/all?fields=name,cca2,flags,region,population,capital,languages,latlng'
+        );
+        const sortedCountries = response.data.sort((a, b) =>
+          a.name.common.localeCompare(b.name.common)
+        );
         setCountries(sortedCountries);
         setFilteredCountries(sortedCountries);
+        console.log('Fetched countries:', sortedCountries.slice(0, 3)); // Log sample
       } catch (err) {
         setError('Failed to fetch countries');
         console.error('Fetch countries error:', err);
@@ -43,17 +115,20 @@ function Home() {
     fetchFavorites();
   }, [token]);
 
+  // Update filtered countries
   useEffect(() => {
     let filtered = countries;
-    if (searchTerm) {
-      filtered = filtered.filter(country =>
-        country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    if (region) {
-      filtered = filtered.filter(country => country.region === region);
+    if (region || searchTerm) {
+      filtered = countries.filter(country => {
+        const matchesRegion = region ? country.region === region : true;
+        const matchesSearch = searchTerm
+          ? country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+          : true;
+        return matchesRegion && matchesSearch;
+      });
     }
     setFilteredCountries(filtered);
+    console.log('Filtered countries:', filtered.length);
   }, [searchTerm, region, countries]);
 
   const handleAddFavorite = async (countryCode) => {
@@ -93,8 +168,8 @@ function Home() {
 
   return (
     <div className="container py-4">
-      <h1 className="display-4 text-center mb-4">Country Explorer</h1>
-      
+      <h1 className="display-4 text-center mb-4">Let's Explore the World!</h1>
+
       {/* Interactive Map */}
       <div className="mb-4">
         <MapContainer
@@ -105,8 +180,9 @@ function Home() {
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
+          <MapController searchTerm={searchTerm} region={region} countries={countries} />
         </MapContainer>
       </div>
 
@@ -117,8 +193,7 @@ function Home() {
             type="text"
             className="form-control"
             placeholder="Search countries..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
         <div className="col-md-6 mb-3">
@@ -139,48 +214,52 @@ function Home() {
 
       {/* Country Cards */}
       <div className="row">
-        {filteredCountries.map((country) => (
-          <div key={country.cca2} className="col-md-4 mb-4">
-            <div className="card h-100">
-              <img
-                src={country.flags.png}
-                alt={`${country.name.common} flag`}
-                className="card-img-top"
-                style={{ height: '150px', objectFit: 'cover' }}
-              />
-              <div className="card-body">
-                <h5 className="card-title">{country.name.common}</h5>
-                <p className="card-text">
-                  <strong>Code:</strong> {country.cca2}<br />
-                  <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}<br />
-                  <strong>Region:</strong> {country.region}<br />
-                  <strong>Population:</strong> {country.population.toLocaleString()}<br />
-                  <strong>Languages:</strong> {Object.values(country.languages || {}).join(', ') || 'N/A'}
-                </p>
-                <div className="d-flex gap-2">
-                  {favorites.includes(country.cca2) ? (
-                    <button
-                      onClick={() => handleRemoveFavorite(country.cca2)}
-                      className="btn btn-danger"
-                    >
-                      Remove from Favorites
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleAddFavorite(country.cca2)}
-                      className="btn btn-primary"
-                    >
-                      Add to Favorites
-                    </button>
-                  )}
-                  <Link to={`/country/${country.cca2}`} className="btn btn-outline-secondary">
-                    View Details
-                  </Link>
+        {filteredCountries.length === 0 ? (
+          <p>No countries found.</p>
+        ) : (
+          filteredCountries.map((country) => (
+            <div key={country.cca2} className="col-md-4 mb-4">
+              <div className="card h-100">
+                <img
+                  src={country.flags.png}
+                  alt={`${country.name.common} flag`}
+                  className="card-img-top"
+                  style={{ height: '150px', objectFit: 'cover' }}
+                />
+                <div className="card-body">
+                  <h5 className="card-title">{country.name.common}</h5>
+                  <p className="card-text">
+                    <strong>Code:</strong> {country.cca2}<br />
+                    <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}<br />
+                    <strong>Region:</strong> {country.region}<br />
+                    <strong>Population:</strong> {country.population.toLocaleString()}<br />
+                    <strong>Languages:</strong> {Object.values(country.languages || {}).join(', ') || 'N/A'}
+                  </p>
+                  <div className="d-flex gap-2">
+                    {favorites.includes(country.cca2) ? (
+                      <button
+                        onClick={() => handleRemoveFavorite(country.cca2)}
+                        className="btn btn-danger"
+                      >
+                        Remove from Favorites
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleAddFavorite(country.cca2)}
+                        className="btn btn-primary"
+                      >
+                        Add to Favorites
+                      </button>
+                    )}
+                    <Link to={`/country/${country.cca2}`} className="btn btn-outline-secondary">
+                      View Details
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

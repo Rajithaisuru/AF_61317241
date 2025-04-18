@@ -54,17 +54,25 @@ function Navbar() {
             <li className="nav-item">
               <Link className="nav-link" to="/" onClick={() => setIsOpen(false)}>Home</Link>
             </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/favorites" onClick={() => setIsOpen(false)}>Favorites</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/profile" onClick={() => setIsOpen(false)}>Profile</Link>
-            </li>
+            {isLoggedIn && (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/favorites" onClick={() => setIsOpen(false)}>Favorites</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/profile" onClick={() => setIsOpen(false)}>Profile</Link>
+                </li>
+              </>
+            )}
           </ul>
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <button className="nav-link btn btn-link" onClick={() => { toggleTheme(); setIsOpen(false); }}>
-                {theme === 'light' ? '🌙 Dark' : '🌞 Light'}
+              <button
+                className="nav-link btn btn-link theme-toggle"
+                onClick={() => { toggleTheme(); setIsOpen(false); }}
+                title={theme === 'light' ? 'Switch to Dark Theme' : 'Switch to Light Theme'}
+              >
+                {theme === 'light' ? '🌙' : '🌞'}
               </button>
             </li>
             {isLoggedIn ? (
@@ -73,7 +81,10 @@ function Navbar() {
                   <span className="nav-link">Welcome, {user?.email.split('@')[0]}!</span>
                 </li>
                 <li className="nav-item">
-                  <button className="nav-link btn btn-link" onClick={() => { handleLogout(); setIsOpen(false); }}>
+                  <button
+                    className="nav-link btn btn-link"
+                    onClick={() => { handleLogout(); setIsOpen(false); }}
+                  >
                     Logout
                   </button>
                 </li>

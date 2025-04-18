@@ -34,13 +34,14 @@ function Profile() {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log('Favorites response:', response.data);
-        if (!response.data || response.data.length === 0) {
+        const favoritesData = response.data.favorites || [];
+        if (!favoritesData.length) {
           setFavorites([]);
           return;
         }
-        const countryCodes = response.data.map(fav => fav.countryCode).filter(code => code);
+        const countryCodes = favoritesData.filter(code => code);
         console.log('Country codes:', countryCodes);
-        if (countryCodes.length === 0) {
+        if (!countryCodes.length) {
           setFavorites([]);
           return;
         }
@@ -83,30 +84,45 @@ function Profile() {
   };
 
   if (!user) {
-    return <div className="container py-4">Loading...</div>;
+    return <div className="container py-4 text-center">Loading...</div>;
   }
+
+  console.log('Rendering Favorite Countries title'); // Debug log
 
   return (
     <div className="container py-4">
-      <h1 className="display-4 text-center mb-4">Profile</h1>
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">User Information</h5>
-          <p className="card-text">
-            <strong>Email:</strong> {user.email}<br />
-            <strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}
-          </p>
+      <h1 className="display-4 text-center mb-5 profile-title">Your Profile</h1>
+      <div className="row justify-content-center">
+        <div className="col-md-8">
+          <div className="card user-card mb-5">
+            <div className="card-body">
+              <h5 className="card-title mb-4">User Information</h5>
+              <div className="user-info">
+                <p className="card-text">
+                  <strong>Name:</strong> {user.name || 'N/A'}<br />
+                  <strong>Email:</strong> {user.email}<br />
+                  <strong>Phone:</strong> {user.phone || 'N/A'}<br />
+                  <strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <h2 className="h4 mb-3">Favorite Countries</h2>
+      <h2
+        className="h4 mb-4 favorite-title"
+        style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '1.75rem' }}
+      >
+        Favorite Countries
+      </h2>
       {error && <div className="alert alert-danger">{error}</div>}
       {favorites.length === 0 ? (
-        <p>No favorite countries added yet.</p>
+        <p className="text-center">No favorite countries added yet. <Link to="/">Explore countries</Link> to add some!</p>
       ) : (
         <div className="row">
-          {favorites.map((country) => (
+          {favorites.map((country, index) => (
             <div key={country.cca2} className="col-md-4 mb-4">
-              <div className="card h-100">
+              <div className="card country-card h-100" style={{ animationDelay: `${index * 0.1}s` }}>
                 <img
                   src={country.flags.png}
                   alt={`${country.name.common} flag`}
@@ -125,11 +141,11 @@ function Profile() {
                   <div className="d-flex gap-2">
                     <button
                       onClick={() => handleRemoveFavorite(country.cca2)}
-                      className="btn btn-danger"
+                      className="btn btn-danger btn-glow"
                     >
-                      Remove from Favorites
+                      Remove
                     </button>
-                    <Link to={`/country/${country.cca2}`} className="btn btn-outline-secondary">
+                    <Link to={`/country/${country.cca2}`} className="btn btn-outline-secondary btn-glow">
                       View Details
                     </Link>
                   </div>

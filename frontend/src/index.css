@@ -34,12 +34,240 @@ body.dark .navbar {
 .navbar-dark .navbar-brand,
 .navbar-dark .nav-link {
   color: #ffffff;
+  position: relative;
+  transition: color 0.3s ease, transform 0.2s ease;
 }
 
 body.dark .navbar-dark .navbar-nav .nav-link,
 body.dark .navbar-dark .navbar-brand,
 body.dark .navbar-dark .nav-link {
   color: #e0e0e0;
+  position: relative;
+  transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Modern hover effects for navbar links */
+.navbar-dark .navbar-nav .nav-link:hover,
+.navbar-dark .navbar-brand:hover,
+.navbar-dark .nav-link:hover {
+  color: #a0c4ff;
+  transform: scale(1.1);
+}
+
+body.dark .navbar-dark .navbar-nav .nav-link:hover,
+body.dark .navbar-dark .navbar-brand:hover,
+body.dark .navbar-dark .nav-link:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+/* Animated underline effect */
+.navbar-dark .navbar-nav .nav-link::after,
+.navbar-dark .navbar-brand::after,
+.navbar-dark .nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: #a0c4ff;
+  transition: width 0.3s ease, left 0.3s ease;
+  transform: translateX(-50%);
+}
+
+body.dark .navbar-dark .navbar-nav .nav-link::after,
+body.dark .navbar-dark .navbar-brand::after,
+body.dark .navbar-dark .nav-link::after {
+  background-color: #ffffff;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover::after,
+.navbar-dark .navbar-brand:hover::after,
+.navbar-dark .nav-link:hover::after {
+  width: 100%;
+  left: 0;
+  transform: translateX(0);
+}
+
+/* Theme toggle button styling */
+.navbar-dark .theme-toggle {
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: transform 0.2s ease, text-shadow 0.3s ease;
+}
+
+.navbar-dark .theme-toggle:hover {
+  transform: scale(1.2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+body.dark .navbar-dark .theme-toggle:hover {
+  text-shadow: 0 0 8px rgba(255, 255, 255, 1);
+}
+
+/* Profile Page Styles */
+.profile-title {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  animation: fadeIn 1s ease-in;
+}
+
+.favorite-title {
+  color: #ffffff !important;
+  font-size: 1.75rem;
+  font-weight: bold;
+  position: relative;
+  display: block;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  z-index: 1;
+}
+
+.favorite-title::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  bottom: -6px;
+  left: 0;
+  background-color: #a0c4ff;
+  transition: width 0.3s ease;
+}
+
+body.dark .favorite-title::after {
+  background-color: #ffffff;
+}
+
+.favorite-title:hover::after {
+  width: 100%;
+}
+
+/* Home Page Styles for h2 in container */
+.container h2 {
+  color: #ffffff !important;
+  font-size: 1.75rem;
+  font-weight: bold;
+  position: relative;
+  display: block;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  z-index: 1;
+}
+
+.container h2::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  bottom: -6px;
+  left: 0;
+  background-color: #a0c4ff;
+  transition: width 0.3s ease;
+}
+
+body.dark .container h2::after {
+  background-color: #ffffff;
+}
+
+.container h2:hover::after {
+  width: 100%;
+}
+
+/* Home Page Styles for h1.display-4 (Country Explorer title) */
+.container h1.display-4 {
+  color: #ffffff !important;
+  font-size: 3rem;
+  font-weight: bold;
+  position: relative;
+  display: block;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  z-index: 1;
+  animation: fadeIn 1s ease-in;
+}
+
+.container h1.display-4::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 4px;
+  bottom: -8px;
+  left: 0;
+  background-color: #a0c4ff;
+  transition: width 0.3s ease;
+}
+
+body.dark .container h1.display-4::after {
+  background-color: #ffffff;
+}
+
+.container h1.display-4:hover::after {
+  width: 100%;
+}
+
+.user-card {
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.2), rgba(53, 122, 189, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+body.dark .user-card {
+  background: linear-gradient(135deg, rgba(30, 42, 68, 0.2), rgba(53, 122, 189, 0.2));
+}
+
+.user-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+.user-info {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.country-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+body.dark .country-card {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.country-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.btn-glow:hover {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+body.dark .btn-glow:hover {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+/* Keyframes for animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Card Styles */
@@ -108,13 +336,37 @@ body.dark .card {
 
 body.dark .form-control,
 body.dark .form-select {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #e0e0e0;
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #1e2a44;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 body.dark .form-control::placeholder {
   color: #a0a0a0;
+}
+
+/* Style select options in dark theme */
+body.dark .form-select option {
+  background-color: #1e2a44;
+  color: #ffffff;
+}
+
+body.dark .form-select option:hover,
+body.dark .form-select option:focus {
+  background-color: #357abd;
+  color: #ffffff;
+}
+
+/* Ensure select dropdown is readable in light theme */
+.form-select option {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+.form-select option:hover,
+.form-select option:focus {
+  background-color: #4a90e2;
+  color: #ffffff;
 }
 
 /* Headings */
@@ -139,8 +391,9 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #0a1d37 !important;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
+  z-index: 1;
 }
 
 .leaflet-tile {
-  filter: brightness(90%) contrast(110%); /* Slightly darken for night sky theme */
+  filter: brightness(90%) contrast(110%);
 }
