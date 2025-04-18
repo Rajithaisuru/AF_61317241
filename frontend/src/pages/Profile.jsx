@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -12,6 +14,7 @@ function Profile() {
   useEffect(() => {
     if (!token) {
       navigate('/login');
+      toast.error("You must be logged in to access your profile.");
       return;
     }
 
@@ -22,9 +25,11 @@ function Profile() {
         });
         console.log('User data:', response.data);
         setUser(response.data);
+        toast.success('User data loaded successfully!');
       } catch (err) {
         setError('Failed to fetch user data');
         console.error('User fetch error:', err);
+        toast.error('Failed to load user data.');
       }
     };
 
@@ -62,6 +67,7 @@ function Profile() {
       } catch (err) {
         setError('Failed to fetch favorite countries');
         console.error('Favorites fetch error:', err);
+        toast.error('Failed to load favorite countries.');
       }
     };
 
@@ -71,15 +77,15 @@ function Profile() {
 
   const handleRemoveFavorite = async (countryCode) => {
     try {
-      await axios.delete('http://localhost:5005/api/favorites/remove', {
+      await axios.delete(`http://localhost:5005/api/favorites/remove/${countryCode}`, {
         headers: { Authorization: `Bearer ${token}` },
-        data: { countryCode },
       });
       setFavorites(favorites.filter(fav => fav.cca2 !== countryCode));
-      alert(`${countryCode} removed from favorites`);
+      toast.success(`${countryCode} removed from favorites!`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove favorite');
       console.error('Remove favorite error:', err);
+      toast.error('Failed to remove favorite country.');
     }
   };
 
@@ -110,7 +116,11 @@ function Profile() {
       <h2 className="h4 mb-4 favorite-title">Favorite Countries</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       {favorites.length === 0 ? (
-        <p className="text-center">No favorite countries added yet. <Link to="/">Explore countries</Link> to add some!</p>
+        <p className="text-center">No favorite countries added yet. 
+          <Link to="/" className="btn btn-primary btn-glow mt-3">
+            Explore Countries
+          </Link>
+        </p>
       ) : (
         <div className="row">
           {favorites.map((country, index) => (
@@ -148,6 +158,7 @@ function Profile() {
           ))}
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 }

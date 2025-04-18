@@ -3,14 +3,15 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import 'leaflet/dist/leaflet.css';
 
 function MapController({ searchTerm, region, countries }) {
   const map = useMap();
 
-  // Region coordinates for navigation
   const regionCoordinates = {
-    Africa: [1.0, 21.0, 3], // [lat, lng, zoom]
+    Africa: [1.0, 21.0, 3],
     Americas: [15.0, -80.0, 3],
     Asia: [30.0, 100.0, 3],
     Europe: [50.0, 15.0, 4],
@@ -19,38 +20,23 @@ function MapController({ searchTerm, region, countries }) {
   };
 
   useEffect(() => {
-    if (!map) {
-      console.log('Map not initialized');
-      return;
-    }
-
-    console.log('MapController: searchTerm=', searchTerm, 'region=', region);
+    if (!map) return;
 
     if (searchTerm) {
-      const matchedCountry = countries.find(country =>
+      const matchedCountry = countries.find((country) =>
         country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      console.log('Matched country:', matchedCountry);
 
       if (matchedCountry && matchedCountry.latlng) {
         const [lat, lng] = matchedCountry.latlng;
-        if (isFinite(lat) && isFinite(lng)) {
-          console.log(`Navigating to ${matchedCountry.name.common}: [${lat}, ${lng}]`);
-          map.setView([lat, lng], 5);
-        } else {
-          console.log('Invalid latlng:', matchedCountry.latlng);
-          map.setView([0, 0], 2);
-        }
+        map.setView([lat, lng], 5);
       } else {
-        console.log('No valid country match or missing latlng');
         map.setView([0, 0], 2);
       }
     } else if (region && regionCoordinates[region]) {
       const [lat, lng, zoom] = regionCoordinates[region];
-      console.log(`Navigating to region ${region}: [${lat}, ${lng}], zoom=${zoom}`);
       map.setView([lat, lng], zoom);
     } else {
-      console.log('Resetting to world view');
       map.setView([0, 0], 2);
     }
   }, [searchTerm, region, countries, map]);
@@ -67,7 +53,6 @@ function Home() {
   const [favorites, setFavorites] = useState([]);
   const token = localStorage.getItem('token');
 
-  // Debounce search input
   const debounce = (func, wait) => {
     let timeout;
     return (...args) => {
@@ -91,10 +76,9 @@ function Home() {
         );
         setCountries(sortedCountries);
         setFilteredCountries(sortedCountries);
-        console.log('Fetched countries:', sortedCountries.slice(0, 3)); // Log sample
       } catch (err) {
         setError('Failed to fetch countries');
-        console.error('Fetch countries error:', err);
+        toast.error('Failed to fetch countries');
       }
     };
 
@@ -104,9 +88,9 @@ function Home() {
           const response = await axios.get('http://localhost:5005/api/favorites', {
             headers: { Authorization: `Bearer ${token}` },
           });
-          setFavorites(response.data.map(fav => fav.countryCode));
+          setFavorites(response.data.favorites);
         } catch (err) {
-          console.error('Fetch favorites error:', err);
+          toast.error('Failed to fetch favorites');
         }
       }
     };
@@ -115,11 +99,10 @@ function Home() {
     fetchFavorites();
   }, [token]);
 
-  // Update filtered countries
   useEffect(() => {
     let filtered = countries;
     if (region || searchTerm) {
-      filtered = countries.filter(country => {
+      filtered = countries.filter((country) => {
         const matchesRegion = region ? country.region === region : true;
         const matchesSearch = searchTerm
           ? country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
@@ -128,49 +111,46 @@ function Home() {
       });
     }
     setFilteredCountries(filtered);
-    console.log('Filtered countries:', filtered.length);
   }, [searchTerm, region, countries]);
 
   const handleAddFavorite = async (countryCode) => {
     if (!token) {
-      alert('Please log in to add favorites');
+      toast.warning('Please log in to add favorites');
       return;
     }
     try {
-      await axios.post(
+      const response = await axios.post(
         'http://localhost:5005/api/favorites/add',
         { countryCode },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setFavorites([...favorites, countryCode]);
-      alert(`${countryCode} added to favorites`);
+      setFavorites(response.data.favorites);
+      toast.success(`${countryCode} added to favorites`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add favorite');
-      console.error('Add favorite error:', err);
+      toast.error(err.response?.data?.message || 'Failed to add favorite');
     }
   };
 
   const handleRemoveFavorite = async (countryCode) => {
     try {
-      await axios.delete('http://localhost:5005/api/favorites/remove', {
+      const response = await axios.delete(`http://localhost:5005/api/favorites/remove/${countryCode}`, {
         headers: { Authorization: `Bearer ${token}` },
-        data: { countryCode },
       });
-      setFavorites(favorites.filter(code => code !== countryCode));
-      alert(`${countryCode} removed from favorites`);
+      setFavorites(response.data.favorites);
+      toast.success(`${countryCode} removed from favorites`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove favorite');
-      console.error('Remove favorite error:', err);
+      toast.error(err.response?.data?.message || 'Failed to remove favorite');
     }
   };
 
-  const regions = [...new Set(countries.map(country => country.region))].filter(Boolean).sort();
+  const regions = [...new Set(countries.map((country) => country.region))].filter(Boolean).sort();
 
   return (
     <div className="container py-4">
       <h1 className="display-4 text-center mb-4">Let's Explore the World!</h1>
 
-      {/* Interactive Map */}
       <div className="mb-4">
         <MapContainer
           center={[0, 0]}
@@ -186,7 +166,6 @@ function Home() {
         </MapContainer>
       </div>
 
-      {/* Search and Filter */}
       <div className="row mb-4">
         <div className="col-md-6 mb-3">
           <input
@@ -204,7 +183,9 @@ function Home() {
           >
             <option value="">All Regions</option>
             {regions.map((reg) => (
-              <option key={reg} value={reg}>{reg}</option>
+              <option key={reg} value={reg}>
+                {reg}
+              </option>
             ))}
           </select>
         </div>
@@ -212,7 +193,6 @@ function Home() {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
-      {/* Country Cards */}
       <div className="row">
         {filteredCountries.length === 0 ? (
           <p>No countries found.</p>
@@ -229,11 +209,16 @@ function Home() {
                 <div className="card-body">
                   <h5 className="card-title">{country.name.common}</h5>
                   <p className="card-text">
-                    <strong>Code:</strong> {country.cca2}<br />
-                    <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}<br />
-                    <strong>Region:</strong> {country.region}<br />
-                    <strong>Population:</strong> {country.population.toLocaleString()}<br />
-                    <strong>Languages:</strong> {Object.values(country.languages || {}).join(', ') || 'N/A'}
+                    <strong>Code:</strong> {country.cca2}
+                    <br />
+                    <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}
+                    <br />
+                    <strong>Region:</strong> {country.region}
+                    <br />
+                    <strong>Population:</strong> {country.population.toLocaleString()}
+                    <br />
+                    <strong>Languages:</strong>{' '}
+                    {Object.values(country.languages || {}).join(', ') || 'N/A'}
                   </p>
                   <div className="d-flex gap-2">
                     {favorites.includes(country.cca2) ? (
@@ -261,6 +246,7 @@ function Home() {
           ))
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }

@@ -10,13 +10,8 @@ router.post('/add', authMiddleware, async (req, res) => {
     const { countryCode } = req.body;
     const user = await User.findById(req.user);
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    if (!countryCode) {
-      return res.status(400).json({ message: 'Country code is required' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!countryCode) return res.status(400).json({ message: 'Country code is required' });
 
     if (!user.favorites.includes(countryCode)) {
       user.favorites.push(countryCode);
@@ -34,9 +29,7 @@ router.post('/add', authMiddleware, async (req, res) => {
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.json({ favorites: user.favorites });
   } catch (err) {
@@ -51,11 +44,15 @@ router.delete('/remove/:countryCode', authMiddleware, async (req, res) => {
     const { countryCode } = req.params;
     const user = await User.findById(req.user);
 
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const initialLength = user.favorites.length;
+    user.favorites = user.favorites.filter((code) => code !== countryCode);
+
+    if (user.favorites.length === initialLength) {
+      return res.status(400).json({ message: 'Country not found in favorites' });
     }
 
-    user.favorites = user.favorites.filter((code) => code !== countryCode);
     await user.save();
 
     res.json({ favorites: user.favorites });
