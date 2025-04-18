@@ -1,37 +1,17 @@
-import { useState, useEffect, useContext } from 'react';
+// src/components/Navbar.jsx
+import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { AuthContext } from '../AuthContext';
 import { ThemeContext } from '../ThemeContext';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  const { user, isLoggedIn, logout } = useContext(AuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-    if (token) {
-      const fetchUser = async () => {
-        try {
-          const response = await axios.get('http://localhost:5005/api/auth/me', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUser(response.data);
-        } catch (err) {
-          console.error('Failed to fetch user:', err);
-        }
-      };
-      fetchUser();
-    }
-  }, []);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setUser(null);
+    logout();
     navigate('/login');
   };
 

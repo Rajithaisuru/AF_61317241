@@ -87,8 +87,6 @@ function Profile() {
     return <div className="container py-4 text-center">Loading...</div>;
   }
 
-  console.log('Rendering Favorite Countries title'); // Debug log
-
   return (
     <div className="container py-4">
       <h1 className="display-4 text-center mb-5 profile-title">Your Profile</h1>
@@ -109,12 +107,7 @@ function Profile() {
           </div>
         </div>
       </div>
-      <h2
-        className="h4 mb-4 favorite-title"
-        style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '1.75rem' }}
-      >
-        Favorite Countries
-      </h2>
+      <h2 className="h4 mb-4 favorite-title">Favorite Countries</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       {favorites.length === 0 ? (
         <p className="text-center">No favorite countries added yet. <Link to="/">Explore countries</Link> to add some!</p>

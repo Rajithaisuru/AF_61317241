@@ -175,7 +175,7 @@ body.dark .container h2::after {
   width: 100%;
 }
 
-/* Home Page Styles for h1.display-4 (Country Explorer title) */
+/* Home Page Styles for h1.display-4 (Let's Explore the World! title) */
 .container h1.display-4 {
   color: #ffffff !important;
   font-size: 3rem;
@@ -207,6 +207,145 @@ body.dark .container h1.display-4::after {
   width: 100%;
 }
 
+/* Login Form Styles */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.login-card {
+  background: linear-gradient(135deg, rgba(74, 144, 226, 0.2), rgba(53, 122, 189, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: fadeIn 0.8s ease-in;
+}
+
+body.dark .login-card {
+  background: linear-gradient(135deg, rgba(30, 42, 68, 0.2), rgba(53, 122, 189, 0.2));
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.login-card h2 {
+  color: #ffffff !important;
+  font-size: 1.75rem;
+  font-weight: bold;
+  position: relative;
+  display: block;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+  z-index: 1;
+  text-align: center;
+}
+
+.login-card h2::after {
+  content: '';
+  position: absolute;
+  width: 50%;
+  height: 3px;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #a0c4ff;
+  transition: width 0.3s ease;
+}
+
+body.dark .login-card h2::after {
+  background-color: #ffffff;
+}
+
+.login-card h2:hover::after {
+  width: 100%;
+}
+
+.login-card .form-control {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.login-card .form-control:focus {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: #a0c4ff;
+  box-shadow: 0 0 10px rgba(160, 196, 255, 0.5);
+  color: #ffffff;
+}
+
+.login-card .form-control::placeholder {
+  color: #a0a0a0;
+}
+
+body.dark .login-card .form-control {
+  background-color: #1e2a44;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+body.dark .login-card .form-control:focus {
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.login-card .form-label {
+  color: #e0e0e0;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+body.dark .login-card .form-label {
+  color: #ffffff;
+}
+
+.login-card .btn-primary {
+  background: linear-gradient(to right, #4a90e2, #357abd);
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem;
+  width: 100%;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.login-card .btn-primary:hover {
+  background: linear-gradient(to right, #5aa0f2, #4689c8);
+  box-shadow: 0 0 15px rgba(74, 144, 226, 0.7);
+  transform: translateY(-2px);
+}
+
+body.dark .login-card .btn-primary {
+  background: linear-gradient(to right, #1e2a44, #357abd);
+}
+
+body.dark .login-card .btn-primary:hover {
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
+
+.login-card .alert-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  border: 1px solid rgba(220, 53, 69, 0.5);
+  color: #f4a7a7;
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Other Component Styles */
 .user-card {
   background: linear-gradient(135deg, rgba(74, 144, 226, 0.2), rgba(53, 122, 189, 0.2));
   border: 1px solid rgba(255, 255, 255, 0.3);

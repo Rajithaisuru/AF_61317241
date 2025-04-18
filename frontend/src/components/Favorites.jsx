@@ -58,17 +58,7 @@ function Favorites() {
     }
   };
 
-  const handleRemove = async (code) => {
-    try {
-      const response = await axios.delete(`http://localhost:5005/api/favorites/remove/${code}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFavorites(response.data.favorites);
-      setError('');
-    } catch (err) {
-      setError('Failed to remove favorite');
-    }
-  };
+
 
   if (!token) {
     return (
