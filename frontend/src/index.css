@@ -1,69 +1,146 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
+/* Ensure high specificity for body */
+html, body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
+  color: #e0e0e0;
+  background-color: #0a1d37 !important;
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png') !important;
+  background-repeat: repeat;
+  background-size: auto;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Maintain night sky for dark theme */
+html.dark, body.dark {
+  background-color: #0a1d37 !important;
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png') !important;
+  background-repeat: repeat;
+  background-size: auto;
 }
 
-button {
+/* Navbar Night Sky Theme */
+.navbar {
+  background: #4a90e2 url('https://www.transparenttextures.com/patterns/stardust.png') repeat !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .navbar {
+  background: #1e2a44 url('https://www.transparenttextures.com/patterns/stardust.png') repeat !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.navbar-dark .navbar-nav .nav-link,
+.navbar-dark .navbar-brand,
+.navbar-dark .nav-link {
+  color: #ffffff;
+}
+
+body.dark .navbar-dark .navbar-nav .nav-link,
+body.dark .navbar-dark .navbar-brand,
+body.dark .navbar-dark .nav-link {
+  color: #e0e0e0;
+}
+
+/* Card Styles */
+.card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e0e0e0;
+}
+
+body.dark .card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #357abd;
+  background-image: linear-gradient(to right, #4a90e2, #357abd);
+  border-color: #357abd;
+}
+
+.btn-primary:hover {
+  background-color: #2f6ba6;
+  border-color: #265689;
+}
+
+.btn-outline-secondary {
+  border-color: #a0a0a0;
+  color: #a0a0a0;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #a0a0a0;
+  color: #0a1d37;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+/* Alert Styles */
+.alert-danger {
+  background-color: #5c2d2d;
+  border-color: #7a3c3c;
+  color: #f4a7a7;
+}
+
+/* Form Styles */
+.form-control,
+.form-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.form-control::placeholder {
+  color: #a0a0a0;
+}
+
+body.dark .form-control,
+body.dark .form-select {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark .form-control::placeholder {
+  color: #a0a0a0;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff;
+}
+
+/* Center Navbar Links */
+.center-nav {
+  display: flex;
+  justify-content: center;
+  flex-grow: 1;
+  margin: 0;
+}
+
+.center-nav .nav-item {
+  margin: 0 15px;
+}
+
+/* Leaflet Map Styles */
+.leaflet-container {
+  background-color: #0a1d37 !important;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.leaflet-tile {
+  filter: brightness(90%) contrast(110%); /* Slightly darken for night sky theme */
 }

@@ -1,6 +1,8 @@
 const express = require('express');
 const { generateToken } = require('../util/jwt');
 const User = require('../models/User');
+const authMiddleware = require('../middleware/auth');
+
 
 const router = express.Router();
 
@@ -76,5 +78,17 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user).select('-password'); // select everything except password
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json(user); // send all user details
+  } catch (err) {
+    console.error('Error fetching user:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 module.exports = router;
