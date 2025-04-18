@@ -61,7 +61,7 @@ function Favorites() {
       setFavorites(response.data.favorites);
       setCountryCode('');
       setError('');
-      toast.success(`Country (${countryDetails[countryCode]?.name || countryCode}) added successfully!`);
+      toast.success(`Country (${countryCode}) added successfully!`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add favorite');
       toast.error(err.response?.data?.message || 'Failed to add favorite');
@@ -75,7 +75,7 @@ function Favorites() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavorites(response.data.favorites);
-      toast.success(`${countryDetails[countryCode]?.name || countryCode} removed from favorites!`);
+      toast.success(`Country (${countryCode}) removed successfully!`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove favorite');
       toast.error(err.response?.data?.message || 'Failed to remove favorite');
@@ -104,7 +104,7 @@ function Favorites() {
           placeholder="Enter country code (e.g., CA)"
           className="form-control"
         />
-        <button type="submit" className="btn btn-primary btn-glow">
+        <button type="submit" className="btn btn-primary">
           Add
         </button>
       </form>
@@ -133,11 +133,11 @@ function Favorites() {
                       <div className="d-flex gap-2">
                         <button
                           onClick={() => handleRemove(code)}
-                          className="btn btn-danger btn-glow"
+                          className="btn btn-danger"
                         >
                           Remove
                         </button>
-                        <Link to={`/country/${code}`} className="btn btn-outline-secondary btn-glow">
+                        <Link to={`/country/${code}`} className="btn btn-primary">
                           View Details
                         </Link>
                       </div>

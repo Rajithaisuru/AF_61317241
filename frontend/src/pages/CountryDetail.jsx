@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function CountryDetail() {
   const { code } = useParams();
@@ -16,6 +18,7 @@ function CountryDetail() {
         setCountry(response.data[0]);
       } catch (err) {
         setError('Failed to fetch country details');
+        toast.error('Failed to fetch country details');
       }
     };
 
@@ -28,6 +31,7 @@ function CountryDetail() {
           setFavorites(response.data.favorites);
         } catch (err) {
           console.error('Failed to fetch favorites:', err);
+          toast.error('Failed to fetch favorites');
         }
       }
     };
@@ -38,7 +42,7 @@ function CountryDetail() {
 
   const handleAddFavorite = async () => {
     if (!token) {
-      alert('Please log in to add favorites');
+      toast.warning('Please log in to add favorites');
       return;
     }
     try {
@@ -48,15 +52,16 @@ function CountryDetail() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setFavorites((prev) => [...prev, code]);
-      alert(`${country.name.common} added to favorites`);
+      toast.success(`${country.name.common} added to favorites`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add favorite');
+      toast.error(err.response?.data?.message || 'Failed to add favorite');
     }
   };
 
   const handleRemoveFavorite = async () => {
     if (!token) {
-      alert('Please log in to remove favorites');
+      toast.warning('Please log in to remove favorites');
       return;
     }
     try {
@@ -64,9 +69,10 @@ function CountryDetail() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavorites((prev) => prev.filter((fav) => fav !== code));
-      alert(`${country.name.common} removed from favorites`);
+      toast.success(`${country.name.common} removed from favorites`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove favorite');
+      toast.error(err.response?.data?.message || 'Failed to remove favorite');
     }
   };
 
@@ -128,6 +134,7 @@ function CountryDetail() {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

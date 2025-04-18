@@ -145,7 +145,7 @@ function Profile() {
                     >
                       Remove
                     </button>
-                    <Link to={`/country/${country.cca2}`} className="btn btn-outline-secondary btn-glow">
+                    <Link to={`/country/${country.cca2}`} className="btn btn-primary">
                       View Details
                     </Link>
                   </div>

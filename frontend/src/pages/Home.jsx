@@ -235,7 +235,7 @@ function Home() {
                         Add to Favorites
                       </button>
                     )}
-                    <Link to={`/country/${country.cca2}`} className="btn btn-outline-secondary">
+                    <Link to={`/country/${country.cca2}`} className="btn btn-primary">
                       View Details
                     </Link>
                   </div>

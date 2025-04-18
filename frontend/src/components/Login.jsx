@@ -1,6 +1,6 @@
 // src/pages/Login.jsx
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 
 function Login() {
@@ -27,7 +27,8 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2 className="h2 mb-4">Login</h2>
+        <h2 className="text-center mb-3">Welcome Back!</h2>
+        <p class="login-text">Login to your account</p>
         {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -56,6 +57,12 @@ function Login() {
             Login
           </button>
         </form>
+        <p className="text-center mt-4">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-primary">
+            Register here
+          </Link>
+        </p>
       </div>
     </div>
   );

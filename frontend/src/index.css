@@ -536,3 +536,59 @@ h1, h2, h3, h4, h5, h6 {
 .leaflet-tile {
   filter: brightness(90%) contrast(110%);
 }
+
+.login-card p, 
+.login-card a {
+  color: #e0e0e0;
+}
+
+.login-card a:hover {
+  color: #a0c4ff; /* optional: lighter color on hover */
+}
+
+/* General Text Style for Login Sentence */
+.login-text {
+  color: #e0e0e0; /* Color matching other text on your page */
+  font-family: inherit; /* Inherit font family from body or parent */
+  font-size: 1rem; /* Adjust the font size if needed */
+  font-weight: normal; /* Adjust the font weight if needed */
+  text-align: center; /* Align it as needed */
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3); /* Add text shadow if desired */
+}
+
+/* Ensure it matches for dark mode as well */
+body.dark .login-text {
+  color: #e0e0e0; /* Match color to the dark mode text */
+}
+
+/* General Text Style for Register Link */
+.login-link p {
+  color: #e0e0e0; /* Match color to the rest of the text */
+  font-family: inherit; /* Inherit font family from body or parent */
+  font-size: 1rem; /* Adjust the font size if needed */
+  font-weight: normal; /* Adjust the font weight if needed */
+  text-align: center; /* Center align the text */
+}
+
+.login-link a {
+  color: #007bff; /* Blue color for the link */
+  text-decoration: none; /* Remove underline */
+  font-weight: bold; /* Make the link text bold */
+}
+
+.login-link a:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+/* Dark mode styling */
+body.dark .login-link p {
+  color: #e0e0e0;
+}
+
+body.dark .login-link a {
+  color: #007bff;
+}
+
+body.dark .login-link a:hover {
+  text-decoration: underline;
+}
