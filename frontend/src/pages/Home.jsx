@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
-import L from 'leaflet';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'leaflet/dist/leaflet.css';
@@ -113,7 +112,7 @@ function Home() {
     setFilteredCountries(filtered);
   }, [searchTerm, region, countries]);
 
-  const handleAddFavorite = async (countryCode) => {
+  const handleAddFavorite = async (countryCode, countryName) => {
     if (!token) {
       toast.warning('Please log in to add favorites');
       return;
@@ -125,20 +124,20 @@ function Home() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setFavorites(response.data.favorites);
-      toast.success(`${countryCode} added to favorites`);
+      toast.success(`${countryName} added to favorites`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add favorite');
       toast.error(err.response?.data?.message || 'Failed to add favorite');
     }
   };
 
-  const handleRemoveFavorite = async (countryCode) => {
+  const handleRemoveFavorite = async (countryCode, countryName) => {
     try {
       const response = await axios.delete(`http://localhost:5005/api/favorites/remove/${countryCode}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavorites(response.data.favorites);
-      toast.success(`${countryCode} removed from favorites`);
+      toast.success(`${countryName} removed from favorites`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove favorite');
       toast.error(err.response?.data?.message || 'Failed to remove favorite');
@@ -223,14 +222,14 @@ function Home() {
                   <div className="d-flex gap-2">
                     {favorites.includes(country.cca2) ? (
                       <button
-                        onClick={() => handleRemoveFavorite(country.cca2)}
+                        onClick={() => handleRemoveFavorite(country.cca2, country.name.common)}
                         className="btn btn-danger"
                       >
                         Remove from Favorites
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleAddFavorite(country.cca2)}
+                        onClick={() => handleAddFavorite(country.cca2, country.name.common)}
                         className="btn btn-primary"
                       >
                         Add to Favorites

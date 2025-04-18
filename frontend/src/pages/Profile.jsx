@@ -14,7 +14,7 @@ function Profile() {
   useEffect(() => {
     if (!token) {
       navigate('/login');
-      toast.error("You must be logged in to access your profile.");
+      toast.error('You must be logged in to access your profile.');
       return;
     }
 
@@ -23,12 +23,10 @@ function Profile() {
         const response = await axios.get('http://localhost:5005/api/auth/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('User data:', response.data);
         setUser(response.data);
         toast.success('User data loaded successfully!');
       } catch (err) {
         setError('Failed to fetch user data');
-        console.error('User fetch error:', err);
         toast.error('Failed to load user data.');
       }
     };
@@ -38,35 +36,26 @@ function Profile() {
         const response = await axios.get('http://localhost:5005/api/favorites', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Favorites response:', response.data);
         const favoritesData = response.data.favorites || [];
-        if (!favoritesData.length) {
-          setFavorites([]);
-          return;
-        }
-        const countryCodes = favoritesData.filter(code => code);
-        console.log('Country codes:', countryCodes);
-        if (!countryCodes.length) {
-          setFavorites([]);
-          return;
-        }
         const countryDetails = await Promise.all(
-          countryCodes.map(code =>
-            axios.get(`https://restcountries.com/v3.1/alpha/${code}?fields=name,cca2,flags,region,population,capital,languages`).catch(err => {
-              console.error(`Failed to fetch country ${code}:`, err);
-              return null;
-            })
+          favoritesData.map((code) =>
+            axios
+              .get(
+                `https://restcountries.com/v3.1/alpha/${code}?fields=name,cca2,flags,region,population,capital,languages`
+              )
+              .catch((err) => {
+                console.error(`Failed to fetch country ${code}:`, err);
+                return null;
+              })
           )
         );
         const validCountries = countryDetails
-          .filter(res => res && res.data)
-          .map(res => res.data)
+          .filter((res) => res && res.data)
+          .map((res) => res.data)
           .sort((a, b) => a.name.common.localeCompare(b.name.common));
-        console.log('Fetched countries:', validCountries);
         setFavorites(validCountries);
       } catch (err) {
         setError('Failed to fetch favorite countries');
-        console.error('Favorites fetch error:', err);
         toast.error('Failed to load favorite countries.');
       }
     };
@@ -75,16 +64,15 @@ function Profile() {
     fetchFavorites();
   }, [token, navigate]);
 
-  const handleRemoveFavorite = async (countryCode) => {
+  const handleRemoveFavorite = async (countryCode, countryName) => {
     try {
       await axios.delete(`http://localhost:5005/api/favorites/remove/${countryCode}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setFavorites(favorites.filter(fav => fav.cca2 !== countryCode));
-      toast.success(`${countryCode} removed from favorites!`);
+      setFavorites(favorites.filter((fav) => fav.cca2 !== countryCode));
+      toast.success(`${countryName} removed from favorites!`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove favorite');
-      console.error('Remove favorite error:', err);
       toast.error('Failed to remove favorite country.');
     }
   };
@@ -103,9 +91,12 @@ function Profile() {
               <h5 className="card-title mb-4">User Information</h5>
               <div className="user-info">
                 <p className="card-text">
-                  <strong>Name:</strong> {user.name || 'N/A'}<br />
-                  <strong>Email:</strong> {user.email}<br />
-                  <strong>Phone:</strong> {user.phone || 'N/A'}<br />
+                  <strong>Name:</strong> {user.name || 'N/A'}
+                  <br />
+                  <strong>Email:</strong> {user.email}
+                  <br />
+                  <strong>Phone:</strong> {user.phone || 'N/A'}
+                  <br />
                   <strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}
                 </p>
               </div>
@@ -116,7 +107,8 @@ function Profile() {
       <h2 className="h4 mb-4 favorite-title">Favorite Countries</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       {favorites.length === 0 ? (
-        <p className="text-center">No favorite countries added yet. 
+        <p className="text-center">
+          No favorite countries added yet.
           <Link to="/" className="btn btn-primary btn-glow mt-3">
             Explore Countries
           </Link>
@@ -135,15 +127,20 @@ function Profile() {
                 <div className="card-body">
                   <h5 className="card-title">{country.name.common}</h5>
                   <p className="card-text">
-                    <strong>Code:</strong> {country.cca2}<br />
-                    <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}<br />
-                    <strong>Region:</strong> {country.region}<br />
-                    <strong>Population:</strong> {country.population.toLocaleString()}<br />
-                    <strong>Languages:</strong> {Object.values(country.languages || {}).join(', ') || 'N/A'}
+                    <strong>Code:</strong> {country.cca2}
+                    <br />
+                    <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}
+                    <br />
+                    <strong>Region:</strong> {country.region}
+                    <br />
+                    <strong>Population:</strong> {country.population.toLocaleString()}
+                    <br />
+                    <strong>Languages:</strong>{' '}
+                    {Object.values(country.languages || {}).join(', ') || 'N/A'}
                   </p>
                   <div className="d-flex gap-2">
                     <button
-                      onClick={() => handleRemoveFavorite(country.cca2)}
+                      onClick={() => handleRemoveFavorite(country.cca2, country.name.common)}
                       className="btn btn-danger btn-glow"
                     >
                       Remove

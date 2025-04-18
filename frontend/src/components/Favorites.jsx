@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import { Link } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Favorites() {
@@ -60,7 +61,7 @@ function Favorites() {
       setFavorites(response.data.favorites);
       setCountryCode('');
       setError('');
-      toast.success(`Country (${countryCode}) added successfully!`);
+      toast.success(`Country (${countryDetails[countryCode]?.name || countryCode}) added successfully!`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add favorite');
       toast.error(err.response?.data?.message || 'Failed to add favorite');
@@ -74,7 +75,7 @@ function Favorites() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavorites(response.data.favorites);
-      toast.success(`Country (${countryCode}) removed successfully!`);
+      toast.success(`${countryDetails[countryCode]?.name || countryCode} removed from favorites!`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove favorite');
       toast.error(err.response?.data?.message || 'Failed to remove favorite');
@@ -93,7 +94,7 @@ function Favorites() {
 
   return (
     <div className="container py-4">
-      <h2 className="h2 mb-4">My Favorite Countries</h2>
+      <h1 className="display-4 text-center mb-5">My Favorite Countries</h1>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleAdd} className="mb-4 d-flex gap-2">
         <input
@@ -103,34 +104,51 @@ function Favorites() {
           placeholder="Enter country code (e.g., CA)"
           className="form-control"
         />
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary btn-glow">
           Add
         </button>
       </form>
-      <ul className="list-group">
-        {favorites.map((code) => (
-          <li key={code} className="list-group-item d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center gap-2">
-              {countryDetails[code] && (
-                <>
-                  <img
-                    src={countryDetails[code].flag}
-                    alt={`${countryDetails[code].name} flag`}
-                    style={{ width: '32px', height: '24px' }}
-                  />
-                  <span>{countryDetails[code].name} ({code})</span>
-                </>
-              )}
+      {favorites.length === 0 ? (
+        <p className="text-center">
+          No favorite countries added yet.
+        </p>
+      ) : (
+        <div className="row">
+          {favorites.map((code, index) => (
+            <div key={code} className="col-md-4 mb-4">
+              <div className="card country-card h-100 shadow-sm" style={{ animationDelay: `${index * 0.1}s` }}>
+                {countryDetails[code] && (
+                  <>
+                    <img
+                      src={countryDetails[code].flag}
+                      alt={`${countryDetails[code].name} flag`}
+                      className="card-img-top"
+                      style={{ height: '150px', objectFit: 'cover' }}
+                    />
+                    <div className="card-body">
+                      <h5 className="card-title">{countryDetails[code].name}</h5>
+                      <p className="card-text">
+                        <strong>Code:</strong> {code}
+                      </p>
+                      <div className="d-flex gap-2">
+                        <button
+                          onClick={() => handleRemove(code)}
+                          className="btn btn-danger btn-glow"
+                        >
+                          Remove
+                        </button>
+                        <Link to={`/country/${code}`} className="btn btn-outline-secondary btn-glow">
+                          View Details
+                        </Link>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
-            <button
-              onClick={() => handleRemove(code)}
-              className="btn btn-danger btn-sm"
-            >
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </div>
+      )}
       <ToastContainer />
     </div>
   );

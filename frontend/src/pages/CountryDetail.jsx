@@ -5,6 +5,7 @@ import { useParams, Link } from 'react-router-dom';
 function CountryDetail() {
   const { code } = useParams();
   const [country, setCountry] = useState(null);
+  const [favorites, setFavorites] = useState([]);
   const [error, setError] = useState('');
   const token = localStorage.getItem('token');
 
@@ -17,8 +18,23 @@ function CountryDetail() {
         setError('Failed to fetch country details');
       }
     };
+
+    const fetchFavorites = async () => {
+      if (token) {
+        try {
+          const response = await axios.get('http://localhost:5005/api/favorites', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setFavorites(response.data.favorites);
+        } catch (err) {
+          console.error('Failed to fetch favorites:', err);
+        }
+      }
+    };
+
     fetchCountry();
-  }, [code]);
+    fetchFavorites();
+  }, [code, token]);
 
   const handleAddFavorite = async () => {
     if (!token) {
@@ -31,9 +47,26 @@ function CountryDetail() {
         { countryCode: code },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      alert(`${code} added to favorites`);
+      setFavorites((prev) => [...prev, code]);
+      alert(`${country.name.common} added to favorites`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add favorite');
+    }
+  };
+
+  const handleRemoveFavorite = async () => {
+    if (!token) {
+      alert('Please log in to remove favorites');
+      return;
+    }
+    try {
+      await axios.delete(`http://localhost:5005/api/favorites/remove/${code}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFavorites((prev) => prev.filter((fav) => fav !== code));
+      alert(`${country.name.common} removed from favorites`);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to remove favorite');
     }
   };
 
@@ -49,6 +82,8 @@ function CountryDetail() {
   if (!country) {
     return <div className="container py-4">Loading...</div>;
   }
+
+  const isFavorite = favorites.includes(code);
 
   return (
     <div className="container py-4">
@@ -76,9 +111,15 @@ function CountryDetail() {
                 .map(c => `${c.name} (${c.symbol})`).join(', ') || 'N/A'}</p>
               <p><strong>Borders:</strong> {country.borders?.join(', ') || 'None'}</p>
               <div className="d-flex gap-2">
-                <button onClick={handleAddFavorite} className="btn btn-primary">
-                  Add to Favorites
-                </button>
+                {isFavorite ? (
+                  <button onClick={handleRemoveFavorite} className="btn btn-danger">
+                    Remove from Favorites
+                  </button>
+                ) : (
+                  <button onClick={handleAddFavorite} className="btn btn-primary">
+                    Add to Favorites
+                  </button>
+                )}
                 <Link to="/" className="btn btn-secondary">
                   Back to Home
                 </Link>
