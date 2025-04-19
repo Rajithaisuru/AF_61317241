@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -80,7 +80,6 @@ function CountryDetail() {
     return (
       <div className="container py-4">
         <div className="alert alert-danger">{error}</div>
-        <Link to="/" className="btn btn-secondary">Back to Home</Link>
       </div>
     );
   }
@@ -90,6 +89,11 @@ function CountryDetail() {
   }
 
   const isFavorite = favorites.includes(code);
+
+  // ✅ Updated: Generate Google Maps URL based on the country name
+  const googleMapsUrl = country.name?.common
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(country.name.common)}`
+    : null;
 
   return (
     <div className="container py-4">
@@ -126,9 +130,16 @@ function CountryDetail() {
                     Add to Favorites
                   </button>
                 )}
-                <Link to="/" className="btn btn-secondary">
-                  Back to Home
-                </Link>
+                {googleMapsUrl && (
+                  <a
+                    href={googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-info"
+                  >
+                    View Country on Google Maps
+                  </a>
+                )}
               </div>
             </div>
           </div>
