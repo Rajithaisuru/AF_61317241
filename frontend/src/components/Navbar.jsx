@@ -3,6 +3,7 @@ import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import { ThemeContext } from '../ThemeContext';
+import geoIcon from '../assets/geo.png'; // Import the geo.png icon
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +20,22 @@ function Navbar() {
     <>
       <nav className="navbar navbar-expand-lg navbar-dark fixed-top">
         <div className="container-fluid">
-          <Link className="navbar-brand" to="/">Country Explorer</Link>
+          {/* Brand Logo and Name */}
+          <div className="d-flex align-items-center">
+            <Link to="/" className="d-flex align-items-center">
+              <img
+                src={geoIcon}
+                alt="Geo Explorer Logo"
+                style={{
+                  height: '40px',
+                  width: '40px',
+                  marginRight: '10px',
+                  cursor: 'pointer',
+                }}
+              />
+            </Link>
+            <Link className="navbar-brand" to="/">GeoExplorer</Link>
+          </div>
           <button
             className="navbar-toggler"
             type="button"
