@@ -50,6 +50,8 @@ function Home() {
   const [region, setRegion] = useState('');
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const countriesPerPage = 9;
   const token = localStorage.getItem('token');
 
   const debounce = (func, wait) => {
@@ -111,6 +113,15 @@ function Home() {
     }
     setFilteredCountries(filtered);
   }, [searchTerm, region, countries]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, region]);
+
+  const indexOfLastCountry = currentPage * countriesPerPage;
+  const indexOfFirstCountry = indexOfLastCountry - countriesPerPage;
+  const currentCountries = filteredCountries.slice(indexOfFirstCountry, indexOfLastCountry);
+  const totalPages = Math.ceil(filteredCountries.length / countriesPerPage);
 
   const handleAddFavorite = async (countryCode, countryName) => {
     if (!token) {
@@ -193,10 +204,10 @@ function Home() {
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="row">
-        {filteredCountries.length === 0 ? (
+        {currentCountries.length === 0 ? (
           <p>No countries found.</p>
         ) : (
-          filteredCountries.map((country) => (
+          currentCountries.map((country) => (
             <div key={country.cca2} className="col-md-4 mb-4">
               <div className="card h-100">
                 <img
@@ -219,7 +230,7 @@ function Home() {
                     <strong>Languages:</strong>{' '}
                     {Object.values(country.languages || {}).join(', ') || 'N/A'}
                   </p>
-                  <div className="d-flex gap-2">
+                  <div className="d-flex gap-2 flex-wrap">
                     {favorites.includes(country.cca2) ? (
                       <button
                         onClick={() => handleRemoveFavorite(country.cca2, country.name.common)}
@@ -245,6 +256,36 @@ function Home() {
           ))
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <nav>
+            <ul className="pagination">
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                  Previous
+                </button>
+              </li>
+              {Array.from({ length: totalPages }, (_, index) => (
+                <li
+                  key={index}
+                  className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+                >
+                  <button className="page-link" onClick={() => setCurrentPage(index + 1)}>
+                    {index + 1}
+                  </button>
+                </li>
+              ))}
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      )}
       <ToastContainer />
     </div>
   );
