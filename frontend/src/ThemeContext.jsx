@@ -1,3 +1,4 @@
+// ThemeContext.js
 import { createContext, useState, useEffect, useMemo } from 'react';
 
 export const ThemeContext = createContext();
@@ -7,11 +8,13 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem('theme', theme);
+    // apply to both html and body for maximum specificity
+    document.documentElement.className = theme;
     document.body.className = theme;
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(curr => (curr === 'light' ? 'dark' : 'light'));
   };
 
   const value = useMemo(() => ({ theme, toggleTheme }), [theme]);

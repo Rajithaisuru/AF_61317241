@@ -10,6 +10,7 @@ function CountryDetail() {
   const [favorites, setFavorites] = useState([]);
   const [error, setError] = useState('');
   const token = localStorage.getItem('token');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const fetchCountry = async () => {
@@ -38,6 +39,9 @@ function CountryDetail() {
 
     fetchCountry();
     fetchFavorites();
+
+    // Check for dark mode (you can customize this as needed)
+    setIsDarkMode(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   }, [code, token]);
 
   const handleAddFavorite = async () => {
@@ -89,15 +93,13 @@ function CountryDetail() {
   }
 
   const isFavorite = favorites.includes(code);
-
-  // ✅ Updated: Generate Google Maps URL based on the country name
   const googleMapsUrl = country.name?.common
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(country.name.common)}`
     : null;
 
   return (
-    <div className="container py-4">
-      <h1 className="h2 mb-4">{country.name.common}</h1>
+    <div className={`container py-4 ${isDarkMode ? 'dark-mode' : ''}`}>
+      <h1 className={`h2 mb-4 ${isDarkMode ? 'text-light' : ''}`}>{country.name.common}</h1>
       <div className="row">
         <div className="col-md-6">
           <img

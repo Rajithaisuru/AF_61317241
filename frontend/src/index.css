@@ -1,4 +1,4 @@
-/* Ensure high specificity for body */
+/* BASE STYLES (applied to both light & dark, unless overridden) */
 html, body {
   margin: 0;
   padding: 0;
@@ -11,60 +11,90 @@ html, body {
   background-size: auto;
 }
 
-/* Maintain night sky for dark theme */
+/*DARK MODE OVERRIDES*/
 html.dark, body.dark {
   background-color: #0a1d37 !important;
   background-image: url('https://www.transparenttextures.com/patterns/stardust.png') !important;
-  background-repeat: repeat;
-  background-size: auto;
+  color: #e0e0e0 !important;
 }
 
-/* Navbar Night Sky Theme */
+/* LIGHT MODE OVERRIDES*/
+html.light, body.light {
+  background-color: #4ab9a5 !important;
+  background-image: none !important;
+  color: #333333 !important;
+}
+
+/* Make sure headings flip to dark in light mode */
+body.light h1, 
+body.light h2, 
+body.light h3, 
+body.light h4, 
+body.light h5, 
+body.light h6 {
+  color: #222222 !important;
+  text-shadow: none !important;
+}
+
+/* Navbar Theme */
 .navbar {
-  background: #4a90e2 url('https://www.transparenttextures.com/patterns/stardust.png') repeat !important;
+  background: #b2d8d8 url('https://www.transparenttextures.com/patterns/stardust.png') repeat !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+/* Dark navbar */
 body.dark .navbar {
   background: #1e2a44 url('https://www.transparenttextures.com/patterns/stardust.png') repeat !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.navbar-dark .navbar-nav .nav-link,
-.navbar-dark .navbar-brand,
-.navbar-dark .nav-link {
+/* Light navbar */
+body.light .navbar {
+  background: #ffffff !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar links */
+.navbar-dark .nav-link,
+.navbar-dark .navbar-brand {
   color: #ffffff;
-  position: relative;
-  transition: color 0.3s ease, transform 0.2s ease;
+  transition: color 0.3s, transform 0.2s;
 }
 
-body.dark .navbar-dark .navbar-nav .nav-link,
-body.dark .navbar-dark .navbar-brand,
-body.dark .navbar-dark .nav-link {
+/* Dark navbar links */
+body.dark .navbar-dark .nav-link,
+body.dark .navbar-dark .navbar-brand {
   color: #e0e0e0;
-  position: relative;
-  transition: color 0.3s ease, transform 0.2s ease;
 }
 
-/* Modern hover effects for navbar links */
-.navbar-dark .navbar-nav .nav-link:hover,
-.navbar-dark .navbar-brand:hover,
-.navbar-dark .nav-link:hover {
+/* Light navbar links (still using .navbar-dark class, but override colors) */
+body.light .navbar-dark .nav-link,
+body.light .navbar-dark .navbar-brand {
+  color: #333333;
+}
+
+/* Hover effects for nav links */
+.navbar-dark .nav-link:hover,
+.navbar-dark .navbar-brand:hover {
   color: #a0c4ff;
   transform: scale(1.1);
 }
 
-body.dark .navbar-dark .navbar-nav .nav-link:hover,
-body.dark .navbar-dark .navbar-brand:hover,
-body.dark .navbar-dark .nav-link:hover {
+/* Dark hover */
+body.dark .navbar-dark .nav-link:hover,
+body.dark .navbar-dark .navbar-brand:hover {
   color: #ffffff;
-  transform: scale(1.1);
 }
 
-/* Animated underline effect */
-.navbar-dark .navbar-nav .nav-link::after,
-.navbar-dark .navbar-brand::after,
-.navbar-dark .nav-link::after {
+/* Light hover */
+body.light .navbar-dark .nav-link:hover,
+body.light .navbar-dark .navbar-brand:hover {
+  color: #000000;
+}
+
+/* Underline animations */
+.navbar-dark .nav-link::after,
+.navbar-dark .navbar-brand::after {
   content: '';
   position: absolute;
   width: 0;
@@ -72,142 +102,95 @@ body.dark .navbar-dark .nav-link:hover {
   bottom: 0;
   left: 50%;
   background-color: #a0c4ff;
-  transition: width 0.3s ease, left 0.3s ease;
+  transition: width 0.3s, left 0.3s;
   transform: translateX(-50%);
 }
 
-body.dark .navbar-dark .navbar-nav .nav-link::after,
-body.dark .navbar-dark .navbar-brand::after,
-body.dark .navbar-dark .nav-link::after {
+/* Dark underline */
+body.dark .navbar-dark .nav-link::after,
+body.dark .navbar-dark .navbar-brand::after {
   background-color: #ffffff;
 }
 
-.navbar-dark .navbar-nav .nav-link:hover::after,
-.navbar-dark .navbar-brand:hover::after,
-.navbar-dark .nav-link:hover::after {
+/* Light underline */
+body.light .navbar-dark .nav-link::after,
+body.light .navbar-dark .navbar-brand::after {
+  background-color: #333333;
+}
+
+/* Expand on hover */
+.navbar-dark .nav-link:hover::after,
+.navbar-dark .navbar-brand:hover::after {
   width: 100%;
   left: 0;
   transform: translateX(0);
 }
 
-/* Theme toggle button styling */
+/* Theme toggle button */
 .navbar-dark .theme-toggle {
   font-size: 1.2rem;
   padding: 0.5rem;
   border-radius: 50%;
-  transition: transform 0.2s ease, text-shadow 0.3s ease;
+  transition: transform 0.2s, text-shadow 0.3s;
 }
-
 .navbar-dark .theme-toggle:hover {
   transform: scale(1.2);
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 }
-
 body.dark .navbar-dark .theme-toggle:hover {
   text-shadow: 0 0 8px rgba(255, 255, 255, 1);
 }
+body.light .navbar-dark .theme-toggle:hover {
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
 
-/* Profile Page Styles */
-.profile-title {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+
+/* Title styles (Profile, Favorites, Home headings) */
+.profile-title,
+.favorite-title,
+.container h2,
+.container h1.display-4,
+.login-card h2 {
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
   animation: fadeIn 1s ease-in;
 }
 
-.favorite-title {
-  color: #ffffff !important;
-  font-size: 1.75rem;
-  font-weight: bold;
-  position: relative;
-  display: block;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-  z-index: 1;
+/* Light mode remove text-shadow on headings */
+body.light .profile-title,
+body.light .favorite-title,
+body.light .container h2,
+body.light .container h1.display-4,
+body.light .login-card h2 {
+  text-shadow: none;
 }
 
-.favorite-title::after {
-  content: '';
-  position: absolute;
-  width: 50%;
-  height: 3px;
-  bottom: -6px;
-  left: 0;
-  background-color: #a0c4ff;
-  transition: width 0.3s ease;
+/* Favorite / Home underline on hover */
+.favorite-title::after,
+.container h2::after,
+.container h1.display-4::after,
+.login-card h2::after {
+  transition: width 0.3s;
 }
-
-body.dark .favorite-title::after {
-  background-color: #ffffff;
-}
-
-.favorite-title:hover::after {
+.favorite-title:hover::after,
+.container h2:hover::after,
+.container h1.display-4:hover::after,
+.login-card h2:hover::after {
   width: 100%;
 }
 
-/* Home Page Styles for h2 in container */
-.container h2 {
-  color: #ffffff !important;
-  font-size: 1.75rem;
-  font-weight: bold;
-  position: relative;
-  display: block;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-  z-index: 1;
-}
-
-.container h2::after {
-  content: '';
-  position: absolute;
-  width: 50%;
-  height: 3px;
-  bottom: -6px;
-  left: 0;
-  background-color: #a0c4ff;
-  transition: width 0.3s ease;
-}
-
-body.dark .container h2::after {
-  background-color: #ffffff;
-}
-
-.container h2:hover::after {
-  width: 100%;
-}
-
-/* Home Page Styles for h1.display-4 (Let's Explore the World! title) */
-.container h1.display-4 {
-  color: #ffffff !important;
-  font-size: 3rem;
-  font-weight: bold;
-  position: relative;
-  display: block;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  z-index: 1;
-  animation: fadeIn 1s ease-in;
-}
-
-.container h1.display-4::after {
-  content: '';
-  position: absolute;
-  width: 50%;
-  height: 4px;
-  bottom: -8px;
-  left: 0;
-  background-color: #a0c4ff;
-  transition: width 0.3s ease;
-}
-
+/* Favorite underline colors */
+body.dark .favorite-title::after,
+body.dark .container h2::after,
 body.dark .container h1.display-4::after {
   background-color: #ffffff;
 }
-
-.container h1.display-4:hover::after {
-  width: 100%;
+body.light .favorite-title::after,
+body.light .container h2::after,
+body.light .container h1.display-4::after {
+  background-color: #333333;
 }
 
-/* Login Form Styles */
+/* Login form container & card */
 .login-container {
   display: flex;
   justify-content: center;
@@ -215,7 +198,6 @@ body.dark .container h1.display-4::after {
   min-height: 100vh;
   padding: 1rem;
 }
-
 .login-card {
   background: linear-gradient(135deg, rgba(74, 144, 226, 0.2), rgba(53, 122, 189, 0.2));
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -224,60 +206,34 @@ body.dark .container h1.display-4::after {
   max-width: 400px;
   width: 100%;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s, box-shadow 0.3s;
   animation: fadeIn 0.8s ease-in;
 }
 
+/* Dark login card */
 body.dark .login-card {
   background: linear-gradient(135deg, rgba(30, 42, 68, 0.2), rgba(53, 122, 189, 0.2));
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.login-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+/* Light login card */
+body.light .login-card {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.login-card h2 {
-  color: #ffffff !important;
-  font-size: 1.75rem;
-  font-weight: bold;
-  position: relative;
-  display: block;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
-  z-index: 1;
-  text-align: center;
-}
-
-.login-card h2::after {
-  content: '';
-  position: absolute;
-  width: 50%;
-  height: 3px;
-  bottom: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #a0c4ff;
-  transition: width 0.3s ease;
-}
-
-body.dark .login-card h2::after {
-  background-color: #ffffff;
-}
-
-.login-card h2:hover::after {
-  width: 100%;
-}
-
+/* Form controls */
 .login-card .form-control {
   background-color: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #e0e0e0;
   border-radius: 8px;
   padding: 0.75rem;
-  transition: all 0.3s ease;
+  transition: all 0.3s;
 }
-
+.login-card .form-control::placeholder {
+  color: #a0a0a0;
+}
 .login-card .form-control:focus {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: #a0c4ff;
@@ -285,30 +241,41 @@ body.dark .login-card h2::after {
   color: #ffffff;
 }
 
-.login-card .form-control::placeholder {
-  color: #a0a0a0;
-}
-
+/* Dark form controls */
 body.dark .login-card .form-control {
   background-color: #1e2a44;
   border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
 }
-
 body.dark .login-card .form-control:focus {
   border-color: #ffffff;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
+/* Light form controls */
+body.light .login-card .form-control {
+  background-color: #ffffff;
+  border-color: #cccccc;
+  color: #333333;
+}
+body.light .login-card .form-control::placeholder {
+  color: #888888;
+}
+body.light .login-card .form-control:focus {
+  border-color: #666666;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  color: #000000;
+}
+
+/* Labels */
 .login-card .form-label {
   color: #e0e0e0;
-  font-weight: 500;
   margin-bottom: 0.5rem;
 }
+body.dark .login-card .form-label { color: #ffffff; }
+body.light .login-card .form-label { color: #333333; }
 
-body.dark .login-card .form-label {
-  color: #ffffff;
-}
-
+/* Buttons */
 .login-card .btn-primary {
   background: linear-gradient(to right, #4a90e2, #357abd);
   border: none;
@@ -316,279 +283,109 @@ body.dark .login-card .form-label {
   padding: 0.75rem;
   width: 100%;
   font-weight: bold;
-  position: relative;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  transition: box-shadow 0.3s, transform 0.2s;
 }
-
 .login-card .btn-primary:hover {
   background: linear-gradient(to right, #5aa0f2, #4689c8);
   box-shadow: 0 0 15px rgba(74, 144, 226, 0.7);
   transform: translateY(-2px);
 }
 
+/* Dark primary */
 body.dark .login-card .btn-primary {
   background: linear-gradient(to right, #1e2a44, #357abd);
 }
-
 body.dark .login-card .btn-primary:hover {
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
 }
 
+/* Light primary */
+body.light .login-card .btn-primary {
+  background: #007bff !important;
+}
+body.light .login-card .btn-primary:hover {
+  background: #0056b3 !important;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Alerts */
 .login-card .alert-danger {
-  background-color: rgba(220, 53, 69, 0.2);
-  border: 1px solid rgba(220, 53, 69, 0.5);
-  color: #f4a7a7;
   border-radius: 8px;
-  padding: 0.75rem;
-  margin-bottom: 1rem;
   animation: fadeIn 0.5s ease-in;
 }
 
-/* Other Component Styles */
-.user-card {
-  background: linear-gradient(135deg, rgba(74, 144, 226, 0.2), rgba(53, 122, 189, 0.2));
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-body.dark .user-card {
-  background: linear-gradient(135deg, rgba(30, 42, 68, 0.2), rgba(53, 122, 189, 0.2));
-}
-
-.user-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-}
-
-.user-info {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 1rem;
-  border-radius: 8px;
-}
-
+/* Other components (user-card, country-card, .card) */
+.card,
+.user-card,
 .country-card {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: fadeInUp 0.5s ease forwards;
-  opacity: 0;
+  color: #e0e0e0;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
-
+body.dark .card,
+body.dark .user-card,
 body.dark .country-card {
   background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+
+  /* make all text inside cards light */
+  color: #ffffff !important;
 }
 
-.country-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+body.light .card,
+body.light .user-card,
+body.light .country-card {
+  background: #ffffff;
+  border-color: #dddddd;
+  color: #333333;
 }
 
-.btn-glow {
-  position: relative;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease;
-}
-
-.btn-glow:hover {
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-
-body.dark .btn-glow:hover {
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
-}
-
-/* Keyframes for animations */
+/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to   { opacity: 1; }
 }
-
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Card Styles */
-.card {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* Utility text/link color in dark & light */
+.login-text,
+.login-link p {
   color: #e0e0e0;
 }
-
-body.dark .card {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e0e0e0;
+body.light .login-text,
+body.light .login-link p {
+  color: #333333;
+}
+.login-link a {
+  color: #007bff;
+  font-weight: bold;
+}
+body.light .login-link a {
+  color: #0056b3;
 }
 
-/* Button Styles */
-.btn-primary {
-  background-color: #357abd;
-  background-image: linear-gradient(to right, #4a90e2, #357abd);
-  border-color: #357abd;
-}
-
-.btn-primary:hover {
-  background-color: #2f6ba6;
-  border-color: #265689;
-}
-
-.btn-outline-secondary {
-  border-color: #a0a0a0;
-  color: #a0a0a0;
-}
-
-.btn-outline-secondary:hover {
-  background-color: #a0a0a0;
-  color: #0a1d37;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-  border-color: #bd2130;
-}
-
-/* Alert Styles */
-.alert-danger {
-  background-color: #5c2d2d;
-  border-color: #7a3c3c;
-  color: #f4a7a7;
-}
-
-/* Form Styles */
-.form-control,
+/* Form-select & options */
 .form-select {
   background-color: rgba(255, 255, 255, 0.1);
   color: #e0e0e0;
-  border-color: rgba(255, 255, 255, 0.2);
 }
-
-.form-control::placeholder {
-  color: #a0a0a0;
-}
-
-body.dark .form-control,
 body.dark .form-select {
   background-color: #1e2a44;
   color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.3);
 }
-
-body.dark .form-control::placeholder {
-  color: #a0a0a0;
-}
-
-/* Style select options in dark theme */
-body.dark .form-select option {
-  background-color: #1e2a44;
-  color: #ffffff;
-}
-
-body.dark .form-select option:hover,
-body.dark .form-select option:focus {
-  background-color: #357abd;
-  color: #ffffff;
-}
-
-/* Ensure select dropdown is readable in light theme */
-.form-select option {
+body.light .form-select {
   background-color: #ffffff;
+  color: #333333;
+}
+.form-select option {
+  background: #ffffff;
   color: #000000;
 }
-
-.form-select option:hover,
-.form-select option:focus {
-  background-color: #4a90e2;
+body.dark .form-select option {
+  background: #1e2a44;
   color: #ffffff;
-}
-
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-  color: #ffffff;
-}
-
-/* Center Navbar Links */
-.center-nav {
-  display: flex;
-  justify-content: center;
-  flex-grow: 1;
-  margin: 0;
-}
-
-.center-nav .nav-item {
-  margin: 0 15px;
-}
-
-/* Leaflet Map Styles */
-.leaflet-container {
-  background-color: #0a1d37 !important;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  z-index: 1;
-}
-
-.leaflet-tile {
-  filter: brightness(90%) contrast(110%);
-}
-
-.login-card p, 
-.login-card a {
-  color: #e0e0e0;
-}
-
-.login-card a:hover {
-  color: #a0c4ff; /* optional: lighter color on hover */
-}
-
-/* General Text Style for Login Sentence */
-.login-text {
-  color: #e0e0e0; /* Color matching other text on your page */
-  font-family: inherit; /* Inherit font family from body or parent */
-  font-size: 1rem; /* Adjust the font size if needed */
-  font-weight: normal; /* Adjust the font weight if needed */
-  text-align: center; /* Align it as needed */
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3); /* Add text shadow if desired */
-}
-
-/* Ensure it matches for dark mode as well */
-body.dark .login-text {
-  color: #e0e0e0; /* Match color to the dark mode text */
-}
-
-/* General Text Style for Register Link */
-.login-link p {
-  color: #e0e0e0; /* Match color to the rest of the text */
-  font-family: inherit; /* Inherit font family from body or parent */
-  font-size: 1rem; /* Adjust the font size if needed */
-  font-weight: normal; /* Adjust the font weight if needed */
-  text-align: center; /* Center align the text */
-}
-
-.login-link a {
-  color: #007bff; /* Blue color for the link */
-  text-decoration: none; /* Remove underline */
-  font-weight: bold; /* Make the link text bold */
-}
-
-.login-link a:hover {
-  text-decoration: underline; /* Add underline on hover */
-}
-
-/* Dark mode styling */
-body.dark .login-link p {
-  color: #e0e0e0;
-}
-
-body.dark .login-link a {
-  color: #007bff;
-}
-
-body.dark .login-link a:hover {
-  text-decoration: underline;
 }
