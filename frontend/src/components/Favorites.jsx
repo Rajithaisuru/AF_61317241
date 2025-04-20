@@ -38,6 +38,9 @@ function Favorites() {
           details[code] = {
             name: country.name.common,
             flag: country.flags.png,
+            population: country.population,
+            region: country.region,
+            capital: country.capital ? country.capital[0] : 'N/A',
           };
         }
         setCountryDetails(details);
@@ -53,15 +56,24 @@ function Favorites() {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
+      // Fetch country details by common name
+      const countryResponse = await axios.get(
+        `https://restcountries.com/v3.1/name/${countryCode}`
+      );
+      const country = countryResponse.data[0];
+      const countryAlphaCode = country.cca2; // Get the alpha-2 code of the country
+
+      // Add the country to favorites using its alpha-2 code
       const response = await axios.post(
         'http://localhost:5005/api/favorites/add',
-        { countryCode },
+        { countryCode: countryAlphaCode },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       setFavorites(response.data.favorites);
       setCountryCode('');
       setError('');
-      toast.success(`Country (${countryCode}) added successfully!`);
+      toast.success(`Country (${country.name.common}) added successfully!`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to add favorite');
       toast.error(err.response?.data?.message || 'Failed to add favorite');
@@ -96,12 +108,15 @@ function Favorites() {
     <div className="container py-4">
       <h1 className="display-4 text-center mb-5">My Favorite Countries</h1>
       {error && <div className="alert alert-danger">{error}</div>}
+      
+      <h3 className="text-center mb-3">Add Your Favorite Country Below!</h3> {/* Attractive heading */}
+      
       <form onSubmit={handleAdd} className="mb-4 d-flex gap-2">
         <input
           type="text"
           value={countryCode}
           onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
-          placeholder="Enter country code (e.g., CA)"
+          placeholder="Enter country code (e.g., CA) or common name"
           className="form-control"
         />
         <button type="submit" className="btn btn-primary">
@@ -129,6 +144,12 @@ function Favorites() {
                       <h5 className="card-title">{countryDetails[code].name}</h5>
                       <p className="card-text">
                         <strong>Code:</strong> {code}
+                        <br />
+                        <strong>Population:</strong> {countryDetails[code].population.toLocaleString()}
+                        <br />
+                        <strong>Region:</strong> {countryDetails[code].region}
+                        <br />
+                        <strong>Capital:</strong> {countryDetails[code].capital}
                       </p>
                       <div className="d-flex gap-2">
                         <button
