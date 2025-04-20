@@ -75,7 +75,9 @@ function Navbar() {
               {isLoggedIn ? (
                 <>
                   <li className="nav-item">
-                    <span className="nav-link">Welcome, {user?.email.split('@')[0]}!</span>
+                    <Link className="nav-link" to="/profile" onClick={() => setIsOpen(false)}>
+                      Welcome, {user?.email.split('@')[0]}!
+                    </Link>
                   </li>
                   <li className="nav-item">
                     <button

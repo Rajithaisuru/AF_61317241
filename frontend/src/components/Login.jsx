@@ -28,7 +28,7 @@ function Login() {
     <div className="login-container">
       <div className="login-card">
         <h2 className="text-center mb-3">Welcome Back!</h2>
-        <p class="login-text">Login to your account</p>
+        <p className="text-center login-text">Login to your account</p>
         {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">

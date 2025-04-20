@@ -20,7 +20,7 @@ html.dark, body.dark {
 
 /* LIGHT MODE OVERRIDES*/
 html.light, body.light {
-  background-color: #4ab9a5 !important;
+  background-color: #e3e3e3 !important;
   background-image: none !important;
   color: #333333 !important;
 }
