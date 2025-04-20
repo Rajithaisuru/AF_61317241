@@ -5,6 +5,8 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'leaflet/dist/leaflet.css';
+import { Carousel } from 'react-bootstrap'; // Import Bootstrap Carousel
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 
 function MapController({ searchTerm, region, countries }) {
   const map = useMap();
@@ -160,7 +162,61 @@ function Home() {
   return (
     <div className="container py-4">
       <h1 className="display-4 text-center mb-4">Let's Explore the World!</h1>
+      
+      {/* Attractive Sentences */}
+      <p className="text-center fs-5 mb-4">
+        Discover the beauty of our planet, one country at a time. <br />
+        From breathtaking landscapes to vibrant cultures, the world is waiting for you to explore. <br />
+        Start your journey now and uncover the hidden gems of every corner of the Earth!
+      </p>
 
+      {/* Sliding Pictures */}
+      <div className="mb-4">
+        <Carousel>
+          <Carousel.Item>
+            <img
+              className="d-block w-100"
+              src="https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fG1vdW50YWluc3xlbnwwfHx8fDE2ODIwMzYwNzA&ixlib=rb-1.2.1&q=80&w=800"
+              alt="Explore Mountains"
+              style={{ borderRadius: '8px', maxHeight: '400px', objectFit: 'cover' }}
+            />
+            <Carousel.Caption>
+              <h3>Majestic Mountains</h3>
+              <p>Experience the serenity of towering peaks and lush valleys.</p>
+            </Carousel.Caption>
+          </Carousel.Item>
+          <Carousel.Item>
+            <img
+              className="d-block w-100"
+              src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fGJlYWNoZXN8ZW58MHx8fHwxNjgyMDM2MDcw&ixlib=rb-1.2.1&q=80&w=800"
+              alt="Discover Beaches"
+              style={{ borderRadius: '8px', maxHeight: '400px', objectFit: 'cover' }}
+            />
+            <Carousel.Caption>
+              <h3>Pristine Beaches</h3>
+              <p>Relax on golden sands and dive into crystal-clear waters.</p>
+            </Carousel.Caption>
+          </Carousel.Item>
+          <Carousel.Item>
+            <img
+              className="d-block w-100"
+              src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fGNpdGllc3xlbnwwfHx8fDE2ODIwMzYwNzA&ixlib=rb-1.2.1&q=80&w=800"
+              alt="Explore Cities"
+              style={{ borderRadius: '8px', maxHeight: '400px', objectFit: 'cover' }}
+            />
+            <Carousel.Caption>
+              <h3>Vibrant Cities</h3>
+              <p>Immerse yourself in the culture and energy of bustling metropolises.</p>
+            </Carousel.Caption>
+          </Carousel.Item>
+        </Carousel>
+      </div>
+
+      {/* Map Section */}
+      <h2 className="text-center mb-3">Explore the World on the Map</h2>
+      <p className="text-center mb-4">
+        Zoom in, pan around, and discover the beauty of every region. The world is at your fingertips!
+      </p>
       <div className="mb-4">
         <MapContainer
           center={[0, 0]}
@@ -176,22 +232,27 @@ function Home() {
         </MapContainer>
       </div>
 
+      {/* Search and Filter Section */}
+      <h2 className="text-center mb-3">Find Your Next Destination</h2>
+      <p className="text-center mb-4">
+        Search for your favorite countries or filter by region to start your journey of discovery!
+      </p>
       <div className="row mb-4">
         <div className="col-md-6 mb-3">
           <input
             type="text"
-            className="form-control"
-            placeholder="Search countries..."
+            className="form-control search-bar"
+            placeholder="🔍 Search countries..."
             onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
         <div className="col-md-6 mb-3">
           <select
-            className="form-select"
+            className="form-select filter-dropdown"
             value={region}
             onChange={(e) => setRegion(e.target.value)}
           >
-            <option value="">All Regions</option>
+            <option value="">🌍 All Regions</option>
             {regions.map((reg) => (
               <option key={reg} value={reg}>
                 {reg}
@@ -203,6 +264,7 @@ function Home() {
 
       {error && <div className="alert alert-danger">{error}</div>}
 
+      {/* Country Cards */}
       <div className="row">
         {currentCountries.length === 0 ? (
           <p>No countries found.</p>

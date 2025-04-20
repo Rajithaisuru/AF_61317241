@@ -389,3 +389,36 @@ body.dark .form-select option {
   background: #1e2a44;
   color: #ffffff;
 }
+
+/* Modern CSS for Search and Filter Section */
+.search-bar {
+  border: 2px solid #007bff;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+}
+
+.search-bar:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.filter-dropdown {
+  border: 2px solid #28a745;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+}
+
+.filter-dropdown:focus {
+  border-color: #1e7e34;
+  box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+  outline: none;
+}
+
+.filter-dropdown option {
+  padding: 10px;
+}
