@@ -21,7 +21,21 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if passwords match
+    // Email regex (simple version)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Password: at least 8 chars, one letter, one number
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (!passwordRegex.test(formData.password)) {
+      setError('Password must be at least 8 characters and include at least one letter and one number');
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;

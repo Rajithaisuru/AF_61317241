@@ -9,6 +9,9 @@ function Favorites() {
   const [countryDetails, setCountryDetails] = useState({});
   const [countryCode, setCountryCode] = useState('');
   const [error, setError] = useState('');
+  const [allCountries, setAllCountries] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const countriesPerPage = 9;
   const token = localStorage.getItem('token');
 
   // Fetch favorite countries
@@ -52,6 +55,24 @@ function Favorites() {
     if (favorites.length > 0) fetchCountryDetails();
   }, [favorites]);
 
+  // Fetch all countries for the list below favorites
+  useEffect(() => {
+    const fetchAllCountries = async () => {
+      try {
+        const response = await axios.get(
+          'https://restcountries.com/v3.1/all?fields=name,cca2,region,population,capital,flags'
+        );
+        const sorted = response.data.sort((a, b) =>
+          a.name.common.localeCompare(b.name.common)
+        );
+        setAllCountries(sorted);
+      } catch (err) {
+        toast.error('Failed to fetch all countries');
+      }
+    };
+    fetchAllCountries();
+  }, []);
+
   // Add country to favorites
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -93,6 +114,12 @@ function Favorites() {
       toast.error(err.response?.data?.message || 'Failed to remove favorite');
     }
   };
+
+  // Calculate pagination
+  const indexOfLastCountry = currentPage * countriesPerPage;
+  const indexOfFirstCountry = indexOfLastCountry - countriesPerPage;
+  const currentCountries = allCountries.slice(indexOfFirstCountry, indexOfLastCountry);
+  const totalPages = Math.ceil(allCountries.length / countriesPerPage);
 
   if (!token) {
     toast.warning('Please log in to view favorites.');
@@ -168,6 +195,100 @@ function Favorites() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      <h2 className="text-center my-5">All Countries</h2>
+      <div className="row">
+        {currentCountries.length === 0 ? (
+          <p className="text-center">No countries found.</p>
+        ) : (
+          currentCountries.map((country) => (
+            <div key={country.cca2} className="col-md-4 mb-4">
+              <div className="card h-100">
+                {country.flags && (
+                  <img
+                    src={country.flags.png}
+                    alt={`${country.name.common} flag`}
+                    className="card-img-top"
+                    style={{ height: '150px', objectFit: 'cover' }}
+                  />
+                )}
+                <div className="card-body">
+                  <h5 className="card-title">{country.name.common}</h5>
+                  <p className="card-text">
+                    <strong>Code:</strong> {country.cca2}
+                    <br />
+                    <strong>Population:</strong> {country.population?.toLocaleString()}
+                    <br />
+                    <strong>Region:</strong> {country.region}
+                    <br />
+                    <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}
+                  </p>
+                  <div className="d-flex gap-2 flex-wrap">
+                    {favorites.includes(country.cca2) ? (
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleRemove(country.cca2)}
+                      >
+                        Remove from Favorites
+                      </button>
+                    ) : (
+                      <button
+                        className="btn btn-success"
+                        onClick={async () => {
+                          try {
+                            const response = await axios.post(
+                              'http://localhost:5005/api/favorites/add',
+                              { countryCode: country.cca2 },
+                              { headers: { Authorization: `Bearer ${token}` } }
+                            );
+                            setFavorites(response.data.favorites);
+                            toast.success(`Country (${country.name.common}) added to favorites!`);
+                          } catch (err) {
+                            toast.error(err.response?.data?.message || 'Failed to add favorite');
+                          }
+                        }}
+                      >
+                        Add to Favorites
+                      </button>
+                    )}
+                    <Link to={`/country/${country.cca2}`} className="btn btn-primary">
+                      View Details
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <nav>
+            <ul className="pagination">
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                  Previous
+                </button>
+              </li>
+              {Array.from({ length: totalPages }, (_, index) => (
+                <li
+                  key={index}
+                  className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+                >
+                  <button className="page-link" onClick={() => setCurrentPage(index + 1)}>
+                    {index + 1}
+                  </button>
+                </li>
+              ))}
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
         </div>
       )}
       <ToastContainer />
