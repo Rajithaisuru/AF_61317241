@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -49,9 +50,10 @@ function Register() {
         {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Name</label>
+            <label className="form-label" htmlFor="name">Name</label>
             <input
               type="text"
+              id="name" // <-- add this
               name="name"
               value={formData.name}
               onChange={handleChange}
@@ -60,9 +62,10 @@ function Register() {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label className="form-label" htmlFor="email">Email</label>
             <input
               type="email"
+              id="email" // <-- add this
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -71,9 +74,10 @@ function Register() {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Phone</label>
+            <label className="form-label" htmlFor="phone">Phone</label>
             <input
               type="tel"
+              id="phone" // <-- add this
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -82,9 +86,10 @@ function Register() {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Password</label>
+            <label className="form-label" htmlFor="password">Password</label>
             <input
               type="password"
+              id="password" // <-- add this
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -93,9 +98,10 @@ function Register() {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Confirm Password</label>
+            <label className="form-label" htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
+              id="confirmPassword" // <-- add this
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
