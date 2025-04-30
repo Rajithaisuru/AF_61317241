@@ -8,6 +8,7 @@ function Register() {
     email: '',
     phone: '',
     password: '',
+    confirmPassword: '', // Added confirmPassword field
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -18,8 +19,20 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     try {
-      await axios.post('http://localhost:5005/api/auth/register', formData);
+      await axios.post('http://localhost:5005/api/auth/register', {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password,
+      });
       alert('Registration successful! Please log in.');
       navigate('/login');
     } catch (err) {
@@ -30,7 +43,9 @@ function Register() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h2 className="h2 mb-4">Register</h2>
+        <div className="text-center mb-4"> {/* Center the heading */}
+          <h2 className="h2">Register</h2>
+        </div>
         {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -72,6 +87,17 @@ function Register() {
               type="password"
               name="password"
               value={formData.password}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
               onChange={handleChange}
               className="form-control"
               required
