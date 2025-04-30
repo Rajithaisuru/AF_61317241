@@ -1,4 +1,5 @@
 // src/pages/Login.jsx
+import React from 'react';
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
@@ -32,9 +33,10 @@ function Login() {
         {error && <div className="alert alert-danger">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="form-label">Email</label>
+            <label className="form-label" htmlFor="email">Email</label>
             <input
               type="email"
+              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -43,9 +45,10 @@ function Login() {
             />
           </div>
           <div className="mb-3">
-            <label className="form-label">Password</label>
+            <label className="form-label" htmlFor="password">Password</label>
             <input
               type="password"
+              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
