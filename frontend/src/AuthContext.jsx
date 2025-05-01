@@ -8,23 +8,10 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.get('http://localhost:5005/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(res => {
-        setUser(res.data);
-        setIsLoggedIn(true);
-      })
-      .catch(err => {
-        console.error('Failed to fetch user:', err);
-        setUser(null);
-        setIsLoggedIn(false);
-      });
-    }
+    checkAuth();
   }, []);
 
   const checkAuth = async () => {
@@ -33,8 +20,13 @@ export const AuthProvider = ({ children }) => {
         withCredentials: true
       });
       setUser(response.data);
+      setIsLoggedIn(true);
     } catch (error) {
+      console.error('Auth check failed:', error);
       setUser(null);
+      setIsLoggedIn(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,25 +35,45 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post(API_ENDPOINTS.AUTH.LOGIN, formData, {
         withCredentials: true
       });
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      
       const userRes = await axios.get(API_ENDPOINTS.AUTH.ME, {
         withCredentials: true
       });
+      
       setUser(userRes.data);
+      setIsLoggedIn(true);
       return response.data;
     } catch (error) {
+      console.error('Login failed:', error);
       throw error;
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
-    setIsLoggedIn(false);
+  const logout = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/api/auth/logout`, {}, {
+        withCredentials: true
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      localStorage.removeItem('token');
+      setUser(null);
+      setIsLoggedIn(false);
+    }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, login, logout, checkAuth }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
