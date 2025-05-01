@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Register from '../components/Register';
+import Register from '../../components/Register';
 import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 
