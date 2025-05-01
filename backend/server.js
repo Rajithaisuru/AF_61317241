@@ -17,13 +17,19 @@ app.use(cors({
       'http://localhost:5173', 
       'https://af-61317241-bqpe.vercel.app',
       'https://af-2-rajithaisuru-2gu7w6ud6-rajitha-isurus-projects.vercel.app',
-      'https://af-2-rajithaisuru.vercel.app'
+      'https://af-2-rajithaisuru.vercel.app',
+      'https://af-61317241.vercel.app',
+      'https://*.vercel.app' // Allow all Vercel preview deployments
     ];
     
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
     if (allowedOrigins.indexOf(origin) === -1) {
+      // Check if the origin matches the Vercel pattern
+      if (origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
