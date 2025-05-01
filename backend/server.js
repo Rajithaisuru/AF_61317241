@@ -11,12 +11,12 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
+  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://your-frontend-url.vercel.app'], // Update with your frontend Vercel URL
   credentials: true,
 }));
 app.use(express.json());
 
-// Connect to MongoDB (if not already connected)
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -28,5 +28,5 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api/auth', authRoutes);
 app.use('/api/favorites', favoritesRoutes);
 
-// ❗ Do not listen to a port on Vercel
+// Export the app (Vercel will handle the port and routing)
 module.exports = app;
