@@ -16,7 +16,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Connect to MongoDB
+// Connect to MongoDB (if not already connected)
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -28,6 +28,5 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api/auth', authRoutes);
 app.use('/api/favorites', favoritesRoutes);
 
-// Start server
-const PORT = process.env.PORT || 5005;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// ❗ Do not listen to a port on Vercel
+module.exports = app;
