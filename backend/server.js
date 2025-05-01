@@ -21,6 +21,11 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+// Test route to verify if server is working
+app.get('/api/test', (req, res) => {
+  res.send('Server is up and running!');
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/favorites', favoritesRoutes);
