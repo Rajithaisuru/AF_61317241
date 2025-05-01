@@ -4,7 +4,8 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: `${API_BASE_URL}/api/auth/login`,
     REGISTER: `${API_BASE_URL}/api/auth/register`,
-    ME: `${API_BASE_URL}/api/auth/me`
+    ME: `${API_BASE_URL}/api/auth/me`,
+    LOGOUT: `${API_BASE_URL}/api/auth/logout`
   },
   FAVORITES: {
     LIST: `${API_BASE_URL}/api/favorites`,
