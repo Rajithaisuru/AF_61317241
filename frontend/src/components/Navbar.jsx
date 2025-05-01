@@ -51,11 +51,14 @@ function Navbar() {
               <li className="nav-item">
                 <Link className="nav-link" to="/" onClick={() => setIsOpen(false)}>Home</Link>
               </li>
-              {isLoggedIn && (
-                <>
-                  <li className="nav-item">
+              <li className="nav-item">
                     <Link className="nav-link" to="/favorites" onClick={() => setIsOpen(false)}>Favorites</Link>
                   </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/countries" onClick={() => setIsOpen(false)}>Comparison</Link>
+              </li>
+              {isLoggedIn && (
+                <>
                   <li className="nav-item">
                     <Link className="nav-link" to="/profile" onClick={() => setIsOpen(false)}>Profile</Link>
                   </li>

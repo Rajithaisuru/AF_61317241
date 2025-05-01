@@ -7,6 +7,7 @@ import Login from './components/Login';
 import Favorites from './components/Favorites';
 import CountryDetail from './pages/CountryDetail';
 import Profile from './pages/Profile';
+import Countries from './pages/Countries';
 import { ThemeProvider } from './ThemeContext';
 import { AuthProvider } from './AuthContext'; 
 import Footer from './components/Footer'; // Import Footer
@@ -26,6 +27,7 @@ function App() {
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/country/:code" element={<CountryDetail />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/countries" element={<Countries />} />
               </Routes>
             </div>
             <Footer /> {/* Render Footer */}
