@@ -25,12 +25,11 @@ function CountryDetail() {
     };
 
     const fetchFavorites = async () => {
-      if (!token) return; // Don't fetch favorites if not logged in
       try {
         const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
-          headers: { Authorization: `Bearer ${token}` }
+          withCredentials: true
         });
-        setFavorites(response.data.favorites || []);
+        setFavorites(response.data);
       } catch (error) {
         console.error('Error fetching favorites:', error);
       }
@@ -39,7 +38,7 @@ function CountryDetail() {
     fetchCountry();
     fetchFavorites();
 
-    // Check for dark mode
+    // Check for dark mode (you can customize this as needed)
     setIsDarkMode(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   }, [code, token]);
 
@@ -49,15 +48,12 @@ function CountryDetail() {
       return;
     }
     try {
-      const response = await axios.post(
-        API_ENDPOINTS.FAVORITES.ADD,
-        { countryCode: code },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setFavorites(response.data.favorites || []);
+      await axios.post(API_ENDPOINTS.FAVORITES.ADD, { countryCode: code }, {
+        withCredentials: true
+      });
+      setFavorites((prev) => [...prev, code]);
       toast.success(`${country.name.common} added to favorites`);
     } catch (err) {
-      console.error('Error adding favorite:', err);
       setError(err.response?.data?.message || 'Failed to add favorite');
       toast.error(err.response?.data?.message || 'Failed to add favorite');
     }
@@ -69,13 +65,12 @@ function CountryDetail() {
       return;
     }
     try {
-      const response = await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(code), {
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(code), {
+        withCredentials: true
       });
-      setFavorites(response.data.favorites || []);
+      setFavorites((prev) => prev.filter((fav) => fav !== code));
       toast.success(`${country.name.common} removed from favorites`);
     } catch (err) {
-      console.error('Error removing favorite:', err);
       setError(err.response?.data?.message || 'Failed to remove favorite');
       toast.error(err.response?.data?.message || 'Failed to remove favorite');
     }
@@ -107,63 +102,43 @@ function CountryDetail() {
             src={country.flags.png}
             alt={`${country.name.common} flag`}
             className="img-fluid mb-3"
-            style={{ maxHeight: '300px', objectFit: 'contain' }}
+            style={{ maxHeight: '200px' }}
           />
-          {token && (
-            <div className="mb-3">
-              {isFavorite ? (
-                <button
-                  onClick={handleRemoveFavorite}
-                  className="btn btn-danger me-2"
-                >
-                  Remove from Favorites
-                </button>
-              ) : (
-                <button
-                  onClick={handleAddFavorite}
-                  className="btn btn-success me-2"
-                >
-                  Add to Favorites
-                </button>
-              )}
-              {googleMapsUrl && (
-                <a
-                  href={googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-primary"
-                >
-                  View on Google Maps
-                </a>
-              )}
-            </div>
-          )}
         </div>
         <div className="col-md-6">
           <div className="card">
             <div className="card-body">
-              <h5 className="card-title">Country Details</h5>
-              <p className="card-text">
-                <strong>Official Name:</strong> {country.name.official}
-                <br />
-                <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}
-                <br />
-                <strong>Region:</strong> {country.region}
-                <br />
-                <strong>Subregion:</strong> {country.subregion || 'N/A'}
-                <br />
-                <strong>Population:</strong> {country.population.toLocaleString()}
-                <br />
-                <strong>Area:</strong> {country.area.toLocaleString()} km²
-                <br />
-                <strong>Languages:</strong>{' '}
-                {Object.values(country.languages || {}).join(', ') || 'N/A'}
-                <br />
-                <strong>Currencies:</strong>{' '}
-                {Object.values(country.currencies || {})
-                  .map((curr) => `${curr.name} (${curr.symbol})`)
-                  .join(', ') || 'N/A'}
-              </p>
+              <p><strong>Official Name:</strong> {country.name.official}</p>
+              <p><strong>Code:</strong> {country.cca2}</p>
+              <p><strong>Capital:</strong> {country.capital?.[0] || 'N/A'}</p>
+              <p><strong>Region:</strong> {country.region}</p>
+              <p><strong>Subregion:</strong> {country.subregion || 'N/A'}</p>
+              <p><strong>Population:</strong> {country.population.toLocaleString()}</p>
+              <p><strong>Languages:</strong> {Object.values(country.languages || {}).join(', ') || 'N/A'}</p>
+              <p><strong>Currencies:</strong> {Object.values(country.currencies || {})
+                .map(c => `${c.name} (${c.symbol})`).join(', ') || 'N/A'}</p>
+              <p><strong>Borders:</strong> {country.borders?.join(', ') || 'None'}</p>
+              <div className="d-flex gap-2">
+                {isFavorite ? (
+                  <button onClick={handleRemoveFavorite} className="btn btn-danger">
+                    Remove from Favorites
+                  </button>
+                ) : (
+                  <button onClick={handleAddFavorite} className="btn btn-primary">
+                    Add to Favorites
+                  </button>
+                )}
+                {googleMapsUrl && (
+                  <a
+                    href={googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-info"
+                  >
+                    View Country on Google Maps
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>
