@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://af-61317241-bqpe.vercel.app';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://af-61317241-bqpe.vercel.app';
 
 export const API_ENDPOINTS = {
   AUTH: {

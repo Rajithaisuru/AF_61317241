@@ -15,11 +15,12 @@ app.use(cors({
     'http://localhost:3000', 
     'http://localhost:5173', 
     'https://af-61317241-bqpe.vercel.app',
-    'https://af-2-rajithaisuru-2gu7w6ud6-rajitha-isurus-projects.vercel.app'
+    'https://af-2-rajithaisuru-2gu7w6ud6-rajitha-isurus-projects.vercel.app',
+    'https://af-2-rajithaisuru.vercel.app'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 app.use(express.json());
 
