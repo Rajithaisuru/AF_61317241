@@ -19,6 +19,7 @@ app.use(cors({
       'https://af-2-rajithaisuru-2gu7w6ud6-rajitha-isurus-projects.vercel.app',
       'https://af-2-rajithaisuru.vercel.app',
       'https://af-61317241.vercel.app',
+      'https://af-61317241-git-main-rajitha-isurus-projects.vercel.app',
       'https://*.vercel.app' // Allow all Vercel preview deployments
     ];
     
@@ -37,8 +38,13 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600 // Cache preflight requests for 10 minutes
 }));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Logging middleware
 app.use((req, res, next) => {

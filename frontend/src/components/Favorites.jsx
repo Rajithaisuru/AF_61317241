@@ -30,13 +30,18 @@ function Favorites() {
           }
         });
         console.log('Favorites response:', response.data);
-        setFavorites(response.data);
+        if (response.data && response.data.favorites) {
+          setFavorites(response.data.favorites);
+        } else {
+          setFavorites([]);
+        }
       } catch (error) {
         console.error('Error fetching favorites:', error);
         if (error.response) {
           console.error('Error response:', error.response.data);
           toast.error(error.response.data.message || 'Failed to fetch favorites');
         }
+        setFavorites([]);
       }
     };
 
@@ -65,7 +70,7 @@ function Favorites() {
         toast.error('Failed to fetch country details');
       }
     };
-    if (favorites.length > 0) fetchCountryDetails();
+    if (favorites && favorites.length > 0) fetchCountryDetails();
   }, [favorites]);
 
   // Fetch all countries for the list below favorites
@@ -113,7 +118,9 @@ function Favorites() {
         }
       );
 
-      setFavorites(response.data);
+      if (response.data && response.data.favorites) {
+        setFavorites(response.data.favorites);
+      }
       setCountryCode('');
       setError('');
       toast.success(`Country (${country.name.common}) added successfully!`);
@@ -140,7 +147,9 @@ function Favorites() {
           }
         }
       );
-      setFavorites(response.data);
+      if (response.data && response.data.favorites) {
+        setFavorites(response.data.favorites);
+      }
       toast.success('Country removed from favorites');
     } catch (err) {
       console.error('Remove favorite error:', err);
