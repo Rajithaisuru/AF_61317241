@@ -18,7 +18,7 @@ function Navbar() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-dark fixed-top">
+      <nav className={`navbar navbar-expand-lg fixed-top ${theme === 'light' ? 'navbar-light bg-light' : 'navbar-dark bg-dark'}`}>
         <div className="container-fluid">
           {/* Brand Logo and Name */}
           <div className="d-flex align-items-center">
