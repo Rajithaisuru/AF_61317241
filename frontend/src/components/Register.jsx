@@ -13,6 +13,7 @@ const Register = () => {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -22,6 +23,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     // Check if any field is empty
     if (!formData.name || !formData.email || !formData.phone || !formData.password || !formData.confirmPassword) {
@@ -58,8 +60,11 @@ const Register = () => {
       });
 
       if (response.data) {
+        setSuccess('Registration successful! Please log in.');
         toast.success('Registration successful! Please log in.');
-        navigate('/login');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000); // Wait 2 seconds before redirecting
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -76,6 +81,7 @@ const Register = () => {
           <h2 className="h2">Register</h2>
         </div>
         {error && <div className="alert alert-danger">{error}</div>}
+        {success && <div className="alert alert-success">{success}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label" htmlFor="name">Name</label>
