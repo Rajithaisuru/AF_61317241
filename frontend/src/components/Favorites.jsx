@@ -20,17 +20,28 @@ function Favorites() {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
+        if (!token) {
+          console.error('No token found');
+          return;
+        }
         const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
-          withCredentials: true
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
+        console.log('Favorites response:', response.data);
         setFavorites(response.data);
       } catch (error) {
         console.error('Error fetching favorites:', error);
+        if (error.response) {
+          console.error('Error response:', error.response.data);
+          toast.error(error.response.data.message || 'Failed to fetch favorites');
+        }
       }
     };
 
     fetchFavorites();
-  }, []);
+  }, [token]);
 
   // Fetch country details (flags, names)
   useEffect(() => {
@@ -79,6 +90,11 @@ function Favorites() {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
+      if (!token) {
+        toast.error('Please login to add favorites');
+        return;
+      }
+
       // Fetch country details by common name
       const countryResponse = await axios.get(
         `https://restcountries.com/v3.1/name/${countryCode}`
@@ -87,15 +103,22 @@ function Favorites() {
       const countryAlphaCode = country.cca2; // Get the alpha-2 code of the country
 
       // Add the country to favorites using its alpha-2 code
-      const response = await axios.post(API_ENDPOINTS.FAVORITES.ADD, { countryCode: countryAlphaCode }, {
-        withCredentials: true
-      });
+      const response = await axios.post(
+        API_ENDPOINTS.FAVORITES.ADD, 
+        { countryCode: countryAlphaCode }, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
       setFavorites(response.data);
       setCountryCode('');
       setError('');
       toast.success(`Country (${country.name.common}) added successfully!`);
     } catch (err) {
+      console.error('Add favorite error:', err);
       setError(err.response?.data?.message || 'Failed to add favorite');
       toast.error(err.response?.data?.message || 'Failed to add favorite');
     }
@@ -104,13 +127,23 @@ function Favorites() {
   // Remove country from favorites
   const handleRemove = async (countryCode) => {
     try {
-      const response = await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(countryCode), {
-        withCredentials: true
-      });
-      setFavorites(favorites.filter(fav => fav.cca2 !== countryCode));
-      toast.success(`Country (${countryCode}) removed successfully!`);
+      if (!token) {
+        toast.error('Please login to remove favorites');
+        return;
+      }
+
+      const response = await axios.delete(
+        API_ENDPOINTS.FAVORITES.REMOVE(countryCode),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      setFavorites(response.data);
+      toast.success('Country removed from favorites');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to remove favorite');
+      console.error('Remove favorite error:', err);
       toast.error(err.response?.data?.message || 'Failed to remove favorite');
     }
   };
@@ -238,7 +271,9 @@ function Favorites() {
                         onClick={async () => {
                           try {
                             const response = await axios.post(API_ENDPOINTS.FAVORITES.ADD, { countryCode: country.cca2 }, {
-                              withCredentials: true
+                              headers: {
+                                Authorization: `Bearer ${token}`
+                              }
                             });
                             setFavorites(response.data);
                             toast.success(`Country (${country.name.common}) added to favorites!`);
