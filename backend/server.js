@@ -11,8 +11,15 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'https://af-61317241-bqpe.vercel.app'],
+  origin: [
+    'http://localhost:3000', 
+    'http://localhost:5173', 
+    'https://af-61317241-bqpe.vercel.app',
+    'https://af-2-rajithaisuru-2gu7w6ud6-rajitha-isurus-projects.vercel.app'
+  ],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 

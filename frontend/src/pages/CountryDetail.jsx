@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { API_ENDPOINTS } from '../config';
 
 function CountryDetail() {
   const { code } = useParams();
@@ -24,16 +25,13 @@ function CountryDetail() {
     };
 
     const fetchFavorites = async () => {
-      if (token) {
-        try {
-          const response = await axios.get('http://localhost:5005/api/favorites', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setFavorites(response.data.favorites);
-        } catch (err) {
-          console.error('Failed to fetch favorites:', err);
-          toast.error('Failed to fetch favorites');
-        }
+      try {
+        const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
+          withCredentials: true
+        });
+        setFavorites(response.data);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
       }
     };
 
@@ -50,11 +48,9 @@ function CountryDetail() {
       return;
     }
     try {
-      await axios.post(
-        'http://localhost:5005/api/favorites/add',
-        { countryCode: code },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.post(API_ENDPOINTS.FAVORITES.ADD, { countryCode: code }, {
+        withCredentials: true
+      });
       setFavorites((prev) => [...prev, code]);
       toast.success(`${country.name.common} added to favorites`);
     } catch (err) {
@@ -69,8 +65,8 @@ function CountryDetail() {
       return;
     }
     try {
-      await axios.delete(`http://localhost:5005/api/favorites/remove/${code}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(code), {
+        withCredentials: true
       });
       setFavorites((prev) => prev.filter((fav) => fav !== code));
       toast.success(`${country.name.common} removed from favorites`);

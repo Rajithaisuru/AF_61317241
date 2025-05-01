@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import 'leaflet/dist/leaflet.css';
 import { Carousel } from 'react-bootstrap'; // Import Bootstrap Carousel
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import { API_ENDPOINTS } from '../config';
 
 function MapController({ searchTerm, region, countries }) {
   const map = useMap();
@@ -45,7 +46,7 @@ function MapController({ searchTerm, region, countries }) {
   return null;
 }
 
-function Home() {
+const Home = () => {
   const [countries, setCountries] = useState([]);
   const [filteredCountries, setFilteredCountries] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,21 +87,19 @@ function Home() {
     };
 
     const fetchFavorites = async () => {
-      if (token) {
-        try {
-          const response = await axios.get('http://localhost:5005/api/favorites', {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setFavorites(response.data.favorites);
-        } catch (err) {
-          toast.error('Failed to fetch favorites');
-        }
+      try {
+        const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
+          withCredentials: true
+        });
+        setFavorites(response.data);
+      } catch (error) {
+        console.error('Error fetching favorites:', error);
       }
     };
 
     fetchCountries();
     fetchFavorites();
-  }, [token]);
+  }, []);
 
   useEffect(() => {
     let filtered = countries;
@@ -125,35 +124,25 @@ function Home() {
   const currentCountries = filteredCountries.slice(indexOfFirstCountry, indexOfLastCountry);
   const totalPages = Math.ceil(filteredCountries.length / countriesPerPage);
 
-  const handleAddFavorite = async (countryCode, countryName) => {
-    if (!token) {
-      toast.warning('Please log in to add favorites');
-      return;
-    }
+  const addToFavorites = async (countryCode) => {
     try {
-      const response = await axios.post(
-        'http://localhost:5005/api/favorites/add',
-        { countryCode },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setFavorites(response.data.favorites);
-      toast.success(`${countryName} added to favorites`);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to add favorite');
-      toast.error(err.response?.data?.message || 'Failed to add favorite');
+      await axios.post(API_ENDPOINTS.FAVORITES.ADD, { countryCode }, {
+        withCredentials: true
+      });
+      // Handle success
+    } catch (error) {
+      // Handle error
     }
   };
 
-  const handleRemoveFavorite = async (countryCode, countryName) => {
+  const removeFromFavorites = async (countryCode) => {
     try {
-      const response = await axios.delete(`http://localhost:5005/api/favorites/remove/${countryCode}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(countryCode), {
+        withCredentials: true
       });
-      setFavorites(response.data.favorites);
-      toast.success(`${countryName} removed from favorites`);
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to remove favorite');
-      toast.error(err.response?.data?.message || 'Failed to remove favorite');
+      // Handle success
+    } catch (error) {
+      // Handle error
     }
   };
 
@@ -295,14 +284,14 @@ function Home() {
                   <div className="d-flex gap-2 flex-wrap">
                     {favorites.includes(country.cca2) ? (
                       <button
-                        onClick={() => handleRemoveFavorite(country.cca2, country.name.common)}
+                        onClick={() => removeFromFavorites(country.cca2)}
                         className="btn btn-danger"
                       >
                         Remove from Favorites
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleAddFavorite(country.cca2, country.name.common)}
+                        onClick={() => addToFavorites(country.cca2)}
                         className="btn btn-primary"
                       >
                         Add to Favorites
@@ -370,6 +359,6 @@ function Home() {
       <ToastContainer />
     </div>
   );
-}
+};
 
 export default Home;

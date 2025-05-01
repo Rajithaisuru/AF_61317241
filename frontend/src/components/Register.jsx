@@ -1,9 +1,9 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config';
 import { useNavigate } from 'react-router-dom';
 
-function Register() {
+const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -42,11 +42,13 @@ function Register() {
     }
 
     try {
-      await axios.post('http://localhost:5005/api/auth/register', {
-        name: formData.name,
+      await axios.post(API_ENDPOINTS.AUTH.REGISTER, {
+        username: formData.name,
         email: formData.email,
         phone: formData.phone,
-        password: formData.password,
+        password: formData.password
+      }, {
+        withCredentials: true
       });
       alert('Registration successful! Please log in.');
       navigate('/login');

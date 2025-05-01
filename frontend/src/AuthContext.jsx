@@ -1,10 +1,11 @@
 // src/AuthContext.jsx
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from './config';
 
 export const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -26,15 +27,30 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  const checkAuth = async () => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.AUTH.ME, {
+        withCredentials: true
+      });
+      setUser(response.data);
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
   const login = async (formData) => {
-    const response = await axios.post('http://localhost:5005/api/auth/login', formData);
-    localStorage.setItem('token', response.data.token);
-    const userRes = await axios.get('http://localhost:5005/api/auth/me', {
-      headers: { Authorization: `Bearer ${response.data.token}` },
-    });
-    setUser(userRes.data);
-    setIsLoggedIn(true);
-    return userRes.data; // return user info after login
+    try {
+      const response = await axios.post(API_ENDPOINTS.AUTH.LOGIN, formData, {
+        withCredentials: true
+      });
+      const userRes = await axios.get(API_ENDPOINTS.AUTH.ME, {
+        withCredentials: true
+      });
+      setUser(userRes.data);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const logout = () => {
