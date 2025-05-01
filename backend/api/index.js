@@ -1,2 +1,4 @@
 const app = require('../server');
-module.exports = app;
+module.exports = (req, res) => {
+  app(req, res); // allow Express to handle the request
+};

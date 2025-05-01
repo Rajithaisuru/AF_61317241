@@ -10,25 +10,23 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true,
-}));
+app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err));
+  .catch((err) => console.error('MongoDB error:', err));
 
-// Test route to verify if server is working
+// Test route
 app.get('/api/test', (req, res) => {
   res.send('Server is up and running!');
 });
 
-// Routes
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/favorites', favoritesRoutes);
 
-// Export the app for Vercel serverless function
-module.exports = app;
+module.exports = (req, res) => {
+  app(req, res); // allow Express to handle the request
+};
