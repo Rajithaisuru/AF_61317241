@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { API_ENDPOINTS } from '../config';
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -21,12 +22,13 @@ function Profile() {
 
     const fetchUser = async () => {
       try {
-        const response = await axios.get('http://localhost:5005/api/auth/me', {
+        const response = await axios.get(API_ENDPOINTS.AUTH.ME, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(response.data);
         toast.success('User data loaded successfully!');
       } catch (err) {
+        console.error('Error fetching user:', err);
         setError('Failed to fetch user data');
         toast.error('Failed to load user data.');
       }
@@ -34,7 +36,7 @@ function Profile() {
 
     const fetchFavorites = async () => {
       try {
-        const response = await axios.get('http://localhost:5005/api/favorites', {
+        const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const favoritesData = response.data.favorites || [];
@@ -56,6 +58,7 @@ function Profile() {
           .sort((a, b) => a.name.common.localeCompare(b.name.common));
         setFavorites(validCountries);
       } catch (err) {
+        console.error('Error fetching favorites:', err);
         setError('Failed to fetch favorite countries');
         toast.error('Failed to load favorite countries.');
       }
@@ -67,12 +70,13 @@ function Profile() {
 
   const handleRemoveFavorite = async (countryCode, countryName) => {
     try {
-      await axios.delete(`http://localhost:5005/api/favorites/remove/${countryCode}`, {
+      await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(countryCode), {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavorites(favorites.filter((fav) => fav.cca2 !== countryCode));
       toast.success(`${countryName} removed from favorites!`);
     } catch (err) {
+      console.error('Error removing favorite:', err);
       setError(err.response?.data?.message || 'Failed to remove favorite');
       toast.error('Failed to remove favorite country.');
     }
@@ -97,65 +101,58 @@ function Profile() {
                   <strong>Email:</strong> {user.email}
                   <br />
                   <strong>Phone:</strong> {user.phone || 'N/A'}
-                  <br />
-                  <strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </div>
           </div>
+
+          <div className="card favorites-card">
+            <div className="card-body">
+              <h5 className="card-title mb-4">Favorite Countries</h5>
+              {favorites.length === 0 ? (
+                <p className="text-center">No favorite countries yet.</p>
+              ) : (
+                <div className="row">
+                  {favorites.map((country) => (
+                    <div key={country.cca2} className="col-md-4 mb-4">
+                      <div className="card h-100">
+                        <img
+                          src={country.flags.png}
+                          className="card-img-top"
+                          alt={`${country.name.common} flag`}
+                        />
+                        <div className="card-body">
+                          <h5 className="card-title">{country.name.common}</h5>
+                          <p className="card-text">
+                            <strong>Region:</strong> {country.region}
+                            <br />
+                            <strong>Population:</strong>{' '}
+                            {country.population.toLocaleString()}
+                            <br />
+                            <strong>Capital:</strong>{' '}
+                            {country.capital ? country.capital[0] : 'N/A'}
+                          </p>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() =>
+                              handleRemoveFavorite(
+                                country.cca2,
+                                country.name.common
+                              )
+                            }
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
-      <h2 className="h4 mb-4 favorite-title">Favorite Countries</h2>
-      {error && <div className="alert alert-danger">{error}</div>}
-      {favorites.length === 0 ? (
-        <p className="text-center">
-          No favorite countries added yet.
-          <Link to="/" className="btn btn-primary btn-glow mt-3">
-            Explore Countries
-          </Link>
-        </p>
-      ) : (
-        <div className="row">
-          {favorites.map((country, index) => (
-            <div key={country.cca2} className="col-md-4 mb-4">
-              <div className="card country-card h-100" style={{ animationDelay: `${index * 0.1}s` }}>
-                <img
-                  src={country.flags.png}
-                  alt={`${country.name.common} flag`}
-                  className="card-img-top"
-                  style={{ height: '150px', objectFit: 'cover' }}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">{country.name.common}</h5>
-                  <p className="card-text">
-                    <strong>Code:</strong> {country.cca2}
-                    <br />
-                    <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}
-                    <br />
-                    <strong>Region:</strong> {country.region}
-                    <br />
-                    <strong>Population:</strong> {country.population.toLocaleString()}
-                    <br />
-                    <strong>Languages:</strong>{' '}
-                    {Object.values(country.languages || {}).join(', ') || 'N/A'}
-                  </p>
-                  <div className="d-flex gap-2">
-                    <button
-                      onClick={() => handleRemoveFavorite(country.cca2, country.name.common)}
-                      className="btn btn-danger btn-glow"
-                    >
-                      Remove
-                    </button>
-                    <Link to={`/country/${country.cca2}`} className="btn btn-primary">
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
       <ToastContainer />
     </div>
   );
