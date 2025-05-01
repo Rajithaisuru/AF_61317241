@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { API_ENDPOINTS } from '../config';
 
 function CountryDetail() {
   const { code } = useParams();
+  const navigate = useNavigate();
   const [country, setCountry] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [error, setError] = useState('');
@@ -25,11 +26,12 @@ function CountryDetail() {
     };
 
     const fetchFavorites = async () => {
+      if (!token) return; // Don't fetch favorites if not logged in
       try {
         const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
-          withCredentials: true
+          headers: { Authorization: `Bearer ${token}` }
         });
-        setFavorites(response.data);
+        setFavorites(response.data.favorites || []);
       } catch (error) {
         console.error('Error fetching favorites:', error);
       }
@@ -38,22 +40,26 @@ function CountryDetail() {
     fetchCountry();
     fetchFavorites();
 
-    // Check for dark mode (you can customize this as needed)
+    // Check for dark mode
     setIsDarkMode(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   }, [code, token]);
 
   const handleAddFavorite = async () => {
     if (!token) {
       toast.warning('Please log in to add favorites');
+      navigate('/login');
       return;
     }
     try {
-      await axios.post(API_ENDPOINTS.FAVORITES.ADD, { countryCode: code }, {
-        withCredentials: true
-      });
-      setFavorites((prev) => [...prev, code]);
+      const response = await axios.post(
+        API_ENDPOINTS.FAVORITES.ADD,
+        { countryCode: code },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setFavorites(response.data.favorites || []);
       toast.success(`${country.name.common} added to favorites`);
     } catch (err) {
+      console.error('Error adding favorite:', err);
       setError(err.response?.data?.message || 'Failed to add favorite');
       toast.error(err.response?.data?.message || 'Failed to add favorite');
     }
@@ -62,15 +68,17 @@ function CountryDetail() {
   const handleRemoveFavorite = async () => {
     if (!token) {
       toast.warning('Please log in to remove favorites');
+      navigate('/login');
       return;
     }
     try {
-      await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(code), {
-        withCredentials: true
+      const response = await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(code), {
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setFavorites((prev) => prev.filter((fav) => fav !== code));
+      setFavorites(response.data.favorites || []);
       toast.success(`${country.name.common} removed from favorites`);
     } catch (err) {
+      console.error('Error removing favorite:', err);
       setError(err.response?.data?.message || 'Failed to remove favorite');
       toast.error(err.response?.data?.message || 'Failed to remove favorite');
     }
@@ -101,31 +109,59 @@ function CountryDetail() {
           <img
             src={country.flags.png}
             alt={`${country.name.common} flag`}
-            className="img-fluid mb-3"
-            style={{ maxHeight: '200px' }}
+            className="img-fluid mb-4"
+            style={{ maxHeight: '300px', objectFit: 'contain' }}
           />
         </div>
         <div className="col-md-6">
           <div className="card">
             <div className="card-body">
-              <p><strong>Official Name:</strong> {country.name.official}</p>
-              <p><strong>Code:</strong> {country.cca2}</p>
-              <p><strong>Capital:</strong> {country.capital?.[0] || 'N/A'}</p>
-              <p><strong>Region:</strong> {country.region}</p>
-              <p><strong>Subregion:</strong> {country.subregion || 'N/A'}</p>
-              <p><strong>Population:</strong> {country.population.toLocaleString()}</p>
-              <p><strong>Languages:</strong> {Object.values(country.languages || {}).join(', ') || 'N/A'}</p>
-              <p><strong>Currencies:</strong> {Object.values(country.currencies || {})
-                .map(c => `${c.name} (${c.symbol})`).join(', ') || 'N/A'}</p>
-              <p><strong>Borders:</strong> {country.borders?.join(', ') || 'None'}</p>
+              <h5 className="card-title">Country Details</h5>
+              <p className="card-text">
+                <strong>Official Name:</strong> {country.name.official}
+                <br />
+                <strong>Capital:</strong> {country.capital?.[0] || 'N/A'}
+                <br />
+                <strong>Region:</strong> {country.region}
+                <br />
+                <strong>Subregion:</strong> {country.subregion || 'N/A'}
+                <br />
+                <strong>Population:</strong> {country.population.toLocaleString()}
+                <br />
+                <strong>Languages:</strong>{' '}
+                {Object.values(country.languages || {}).join(', ') || 'N/A'}
+                <br />
+                <strong>Currencies:</strong>{' '}
+                {Object.values(country.currencies || {})
+                  .map((curr) => `${curr.name} (${curr.symbol})`)
+                  .join(', ') || 'N/A'}
+              </p>
               <div className="d-flex gap-2">
-                {isFavorite ? (
-                  <button onClick={handleRemoveFavorite} className="btn btn-danger">
-                    Remove from Favorites
-                  </button>
+                {token ? (
+                  isFavorite ? (
+                    <button
+                      onClick={handleRemoveFavorite}
+                      className="btn btn-danger"
+                    >
+                      Remove from Favorites
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleAddFavorite}
+                      className="btn btn-success"
+                    >
+                      Add to Favorites
+                    </button>
+                  )
                 ) : (
-                  <button onClick={handleAddFavorite} className="btn btn-primary">
-                    Add to Favorites
+                  <button
+                    onClick={() => {
+                      toast.warning('Please log in to manage favorites');
+                      navigate('/login');
+                    }}
+                    className="btn btn-primary"
+                  >
+                    Log in to Add Favorites
                   </button>
                 )}
                 {googleMapsUrl && (
@@ -133,9 +169,9 @@ function CountryDetail() {
                     href={googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-info"
+                    className="btn btn-primary"
                   >
-                    View Country on Google Maps
+                    View on Google Maps
                   </a>
                 )}
               </div>
