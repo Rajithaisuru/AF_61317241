@@ -1,27 +1,38 @@
 // src/pages/Login.jsx
-import React from 'react';
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function Login() {
+const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setError(''); // Clear error when user types
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+
     try {
-      const user = await login(formData);
-      alert('Login successful!');
-      navigate('/'); // Navigate to profile immediately after login
+      await login(formData);
+      toast.success('Login successful!');
+      navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      console.error('Login error:', err);
+      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,6 +53,7 @@ function Login() {
               onChange={handleChange}
               className="form-control"
               required
+              disabled={loading}
             />
           </div>
           <div className="mb-3">
@@ -54,10 +66,15 @@ function Login() {
               onChange={handleChange}
               className="form-control"
               required
+              disabled={loading}
             />
           </div>
-          <button type="submit" className="btn btn-primary">
-            Login
+          <button 
+            type="submit" 
+            className="btn btn-primary w-100"
+            disabled={loading}
+          >
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <p className="text-center mt-4">
@@ -69,6 +86,6 @@ function Login() {
       </div>
     </div>
   );
-}
+};
 
 export default Login;
