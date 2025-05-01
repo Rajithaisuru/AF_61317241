@@ -51,7 +51,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(API_ENDPOINTS.AUTH.REGISTER, {
-        username: formData.name,
+        name: formData.name,
         email: formData.email,
         phone: formData.phone,
         password: formData.password
@@ -63,8 +63,9 @@ const Register = () => {
       }
     } catch (err) {
       console.error('Registration error:', err);
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
-      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
+      const errorMessage = err.response?.data?.message || 'Registration failed. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     }
   };
 
