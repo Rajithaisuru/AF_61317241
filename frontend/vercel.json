@@ -5,7 +5,8 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "buildCommand": "npm run build"
       }
     }
   ],
@@ -13,6 +14,10 @@
     {
       "src": "/(.*)",
       "dest": "/dist/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "https://your-backend-url.vercel.app/api/$1"
     }
   ]
 } 
