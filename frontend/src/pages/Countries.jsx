@@ -301,7 +301,8 @@ const Countries = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <nav aria-label="Page navigation" className="mt-4">
-          <ul className="pagination justify-content-center">
+          {/* Large screens: show all page numbers */}
+          <ul className="pagination justify-content-center d-none d-sm-flex">
             <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
               <button 
                 className="page-link" 
@@ -321,6 +322,32 @@ const Countries = () => {
                 </button>
               </li>
             ))}
+            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+              <button 
+                className="page-link" 
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </li>
+          </ul>
+          {/* Small screens: compact pagination */}
+          <ul className="pagination justify-content-center d-flex d-sm-none">
+            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+              <button 
+                className="page-link" 
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+            </li>
+            <li className="page-item active">
+              <span className="page-link">
+                {currentPage} / {totalPages}
+              </span>
+            </li>
             <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
               <button 
                 className="page-link" 
