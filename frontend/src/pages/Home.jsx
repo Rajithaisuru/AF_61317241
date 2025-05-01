@@ -323,7 +323,8 @@ function Home() {
       {totalPages > 1 && (
         <div className="d-flex justify-content-center mt-4">
           <nav>
-            <ul className="pagination">
+            {/* For large screens: show all page numbers */}
+            <ul className="pagination d-none d-sm-flex">
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
                   Previous
@@ -339,6 +340,24 @@ function Home() {
                   </button>
                 </li>
               ))}
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                  Next
+                </button>
+              </li>
+            </ul>
+            {/* For small screens: show only previous, current, next */}
+            <ul className="pagination d-flex d-sm-none">
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                  Previous
+                </button>
+              </li>
+              <li className="page-item active">
+                <span className="page-link">
+                  {currentPage} / {totalPages}
+                </span>
+              </li>
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                 <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
                   Next
