@@ -129,9 +129,11 @@ const Home = () => {
       await axios.post(API_ENDPOINTS.FAVORITES.ADD, { countryCode }, {
         withCredentials: true
       });
-      // Handle success
+      setFavorites([...favorites, countryCode]);
+      toast.success('Country added to favorites successfully!');
     } catch (error) {
-      // Handle error
+      console.error('Error adding to favorites:', error);
+      toast.error('Failed to add country to favorites');
     }
   };
 
@@ -140,9 +142,11 @@ const Home = () => {
       await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(countryCode), {
         withCredentials: true
       });
-      // Handle success
+      setFavorites(favorites.filter(code => code !== countryCode));
+      toast.success('Country removed from favorites successfully!');
     } catch (error) {
-      // Handle error
+      console.error('Error removing from favorites:', error);
+      toast.error('Failed to remove country from favorites');
     }
   };
 
