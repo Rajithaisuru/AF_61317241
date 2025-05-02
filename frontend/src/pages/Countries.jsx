@@ -29,6 +29,7 @@ const Countries = () => {
       }
     })();
   }, []);
+  
 
   // Memoize regions
   const regions = useMemo(
