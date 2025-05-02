@@ -89,7 +89,7 @@ const Home = () => {
     const fetchFavorites = async () => {
       if (token) {
         try {
-          const response = await axios.get('http://localhost:5005/api/favorites', {
+          const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setFavorites(response.data.favorites || []);
@@ -134,11 +134,11 @@ const Home = () => {
     }
     try {
       const response = await axios.post(
-        'http://localhost:5005/api/favorites/add',
+        API_ENDPOINTS.FAVORITES.ADD,
         { countryCode },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setFavorites(prevFavorites => [...prevFavorites, countryCode]);
+      setFavorites(response.data.favorites);
       toast.success(`${countryName} added to favorites`);
     } catch (err) {
       console.error('Error adding favorite:', err);
@@ -152,10 +152,10 @@ const Home = () => {
       return;
     }
     try {
-      const response = await axios.delete(`http://localhost:5005/api/favorites/remove/${countryCode}`, {
+      const response = await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(countryCode), {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setFavorites(prevFavorites => prevFavorites.filter(code => code !== countryCode));
+      setFavorites(response.data.favorites);
       toast.success(`${countryName} removed from favorites`);
     } catch (err) {
       console.error('Error removing favorite:', err);
