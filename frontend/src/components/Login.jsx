@@ -2,37 +2,26 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
-const Login = () => {
+function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(''); // Clear error when user types
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
-
     try {
       await login(formData);
-      toast.success('Login successful!');
+      alert('Login successful!');
       navigate('/');
     } catch (err) {
-      console.error('Login error:', err);
-      const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || 'Login failed');
     }
   };
 
@@ -53,7 +42,6 @@ const Login = () => {
               onChange={handleChange}
               className="form-control"
               required
-              disabled={loading}
             />
           </div>
           <div className="mb-3">
@@ -66,15 +54,10 @@ const Login = () => {
               onChange={handleChange}
               className="form-control"
               required
-              disabled={loading}
             />
           </div>
-          <button 
-            type="submit" 
-            className="btn btn-primary w-100"
-            disabled={loading}
-          >
-            {loading ? 'Logging in...' : 'Login'}
+          <button type="submit" className="btn btn-primary">
+            Login
           </button>
         </form>
         <p className="text-center mt-4">
@@ -86,6 +69,6 @@ const Login = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Login;
