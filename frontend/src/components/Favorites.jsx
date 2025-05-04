@@ -143,20 +143,6 @@ function Favorites() {
       <h1 className="display-4 text-center mb-5">My Favorite Countries</h1>
       {error && <div className="alert alert-danger">{error}</div>}
       
-      <h3 className="text-center mb-3">Add Your Favorite Country Below!</h3> {/* Attractive heading */}
-      
-      <form onSubmit={handleAdd} className="mb-4 d-flex gap-2">
-        <input
-          type="text"
-          value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
-          placeholder="Enter country code (e.g., CA) or common name"
-          className="form-control"
-        />
-        <button type="submit" className="btn btn-primary">
-          Add
-        </button>
-      </form>
       {favorites.length === 0 ? (
         <p className="text-center">
           No favorite countries added yet.
@@ -204,6 +190,22 @@ function Favorites() {
           ))}
         </div>
       )}
+
+      <h3 className="text-center mb-3">Add Your Favorite Country Below!</h3>
+      
+      <form onSubmit={handleAdd} className="mb-4 d-flex gap-2">
+        <input
+          type="text"
+          value={countryCode}
+          onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
+          placeholder="Enter country code (e.g., CA) or common name"
+          className="form-control"
+        />
+        <button type="submit" className="btn btn-primary">
+          Add
+        </button>
+      </form>
+
       <h2 className="text-center my-5">All Countries</h2>
       <div className="row">
         {currentCountries.length === 0 ? (
