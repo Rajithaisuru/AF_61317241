@@ -19,10 +19,10 @@ html.dark, body.dark {
 }
 
 /* LIGHT MODE OVERRIDES*/
-html.light, body.light {
+html.light, body.light, .light, body.light * {
   background-color: #e3e3e3 !important;
-  background-image: none !important;
   color: #333333 !important;
+  background-image: none !important;
 }
 
 /* Make sure headings flip to dark in light mode */
