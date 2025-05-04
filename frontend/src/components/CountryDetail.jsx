@@ -127,7 +127,16 @@ function CountryDetail() {
                     Remove from Favorites
                   </button>
                 ) : (
-                  <button onClick={handleAddFavorite} className="btn btn-success">
+                  <button
+                    onClick={() => {
+                      if (!token) {
+                        toast.warning('Please log in to add favorites');
+                        return;
+                      }
+                      handleAddFavorite();
+                    }}
+                    className="btn btn-success"
+                  >
                     Add to Favorites
                   </button>
                 )}
