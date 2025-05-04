@@ -128,13 +128,7 @@ function CountryDetail() {
                   </button>
                 ) : (
                   <button
-                    onClick={() => {
-                      if (!token) {
-                        toast.warning('Please log in to add favorites');
-                        return;
-                      }
-                      handleAddFavorite();
-                    }}
+                    onClick={handleAddFavorite}
                     className="btn btn-success"
                   >
                     Add to Favorites
