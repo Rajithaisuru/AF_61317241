@@ -12,12 +12,11 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/dist/$1"
-    },
-    {
       "src": "/api/(.*)",
       "dest": "https://your-backend-url.vercel.app/api/$1"
     }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
   ]
-} 
+}
