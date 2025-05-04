@@ -301,65 +301,51 @@ const Countries = () => {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <nav aria-label="Page navigation" className="mt-4">
-          {/* Large screens: show all page numbers */}
-          <ul className="pagination justify-content-center d-none d-sm-flex">
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <button 
-                className="page-link" 
-                onClick={() => paginate(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-            </li>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
-              <li key={number} className={`page-item ${currentPage === number ? 'active' : ''}`}>
+        <div className="d-flex justify-content-center align-items-center mt-4 flex-wrap">
+          <nav className="w-100">
+            <ul className="pagination pagination-sm pagination-md pagination-lg flex-wrap justify-content-center mb-0" 
+                style={{ 
+                  maxWidth: '100%',
+                  overflowX: 'auto',
+                  flexWrap: 'wrap',
+                  gap: '4px'
+                }}>
+              {/* Previous Button */}
+              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                 <button 
                   className="page-link" 
-                  onClick={() => paginate(number)}
+                  onClick={() => currentPage > 1 && paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
                 >
-                  {number}
+                  Previous
                 </button>
               </li>
-            ))}
-            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-              <button 
-                className="page-link" 
-                onClick={() => paginate(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </li>
-          </ul>
-          {/* Small screens: compact pagination */}
-          <ul className="pagination justify-content-center d-flex d-sm-none">
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-              <button 
-                className="page-link" 
-                onClick={() => paginate(currentPage - 1)}
-                disabled={currentPage === 1}
-              >
-                Previous
-              </button>
-            </li>
-            <li className="page-item active">
-              <span className="page-link">
-                {currentPage} / {totalPages}
-              </span>
-            </li>
-            <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-              <button 
-                className="page-link" 
-                onClick={() => paginate(currentPage + 1)}
-                disabled={currentPage === totalPages}
-              >
-                Next
-              </button>
-            </li>
-          </ul>
-        </nav>
+
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }, (_, index) => (
+                <li
+                  key={index}
+                  className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}
+                >
+                  <button className="page-link" onClick={() => paginate(index + 1)}>
+                    {index + 1}
+                  </button>
+                </li>
+              ))}
+
+              {/* Next Button */}
+              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                <button 
+                  className="page-link" 
+                  onClick={() => currentPage < totalPages && paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
       )}
     </div>
   );
