@@ -315,7 +315,7 @@ const Home = () => {
                           }
                           handleAddFavorite(country.cca2, country.name.common);
                         }}
-                        className={token ? "btn btn-success" : "btn btn-primary"}
+                        className="btn btn-success"
                       >
                         Add to Favorites
                       </button>
