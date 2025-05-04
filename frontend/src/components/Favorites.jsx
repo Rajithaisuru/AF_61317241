@@ -204,7 +204,7 @@ function Favorites() {
         </div>
       )}
 
-      <h3 className="text-center mb-3">Add Your Favorite Country Below!</h3>
+      <h3 className="text-center mb-5 mt-5">Add Your Favorite Country Below!</h3>
       
       <div className="row mb-4">
         <div className="col-md-6">
