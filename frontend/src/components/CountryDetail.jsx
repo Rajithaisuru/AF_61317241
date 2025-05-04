@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
-import { ThemeContext } from '../ThemeContext';
-import { API_ENDPOINTS } from '../config';
 import 'react-toastify/dist/ReactToastify.css';
 
 function CountryDetail() {
@@ -12,7 +10,7 @@ function CountryDetail() {
   const [favorites, setFavorites] = useState([]);
   const [error, setError] = useState('');
   const token = localStorage.getItem('token');
-  const { theme } = useContext(ThemeContext);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
     const fetchCountry = async () => {
@@ -28,7 +26,7 @@ function CountryDetail() {
     const fetchFavorites = async () => {
       if (token) {
         try {
-          const response = await axios.get(API_ENDPOINTS.FAVORITES.LIST, {
+          const response = await axios.get('http://localhost:5005/api/favorites', {
             headers: { Authorization: `Bearer ${token}` },
           });
           setFavorites(response.data.favorites);
@@ -41,6 +39,8 @@ function CountryDetail() {
 
     fetchCountry();
     fetchFavorites();
+
+    setIsDarkMode(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
   }, [code, token]);
 
   const handleAddFavorite = async () => {
@@ -50,7 +50,7 @@ function CountryDetail() {
     }
     try {
       await axios.post(
-        API_ENDPOINTS.FAVORITES.ADD,
+        'http://localhost:5005/api/favorites/add',
         { countryCode: code },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -68,7 +68,7 @@ function CountryDetail() {
       return;
     }
     try {
-      await axios.delete(API_ENDPOINTS.FAVORITES.REMOVE(code), {
+      await axios.delete(`http://localhost:5005/api/favorites/remove/${code}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavorites((prev) => prev.filter((fav) => fav !== code));
@@ -81,20 +81,14 @@ function CountryDetail() {
 
   if (error) {
     return (
-      <div className={`container py-4 ${theme === 'dark' ? 'text-light' : ''}`}>
+      <div className="container py-4">
         <div className="alert alert-danger">{error}</div>
       </div>
     );
   }
 
   if (!country) {
-    return (
-      <div className={`container py-4 ${theme === 'dark' ? 'text-light' : ''}`}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
+    return <div className="container py-4">Loading...</div>;
   }
 
   const isFavorite = favorites.includes(code);
@@ -103,19 +97,19 @@ function CountryDetail() {
     : null;
 
   return (
-    <div className={`container py-4 ${theme === 'dark' ? 'text-light' : ''}`}>
-      <h1 className="h2 mb-4">{country.name.common}</h1>
+    <div className={`container py-4 ${isDarkMode ? 'dark-mode' : ''}`}>
+      <h1 className={`h2 mb-4 ${isDarkMode ? 'text-light' : ''}`}>{country.name.common}</h1>
       <div className="row">
         <div className="col-md-6">
           <img
             src={country.flags.png}
             alt={`${country.name.common} flag`}
-            className="img-fluid mb-3 shadow-sm rounded"
+            className="img-fluid mb-3"
             style={{ maxHeight: '200px' }}
           />
         </div>
         <div className="col-md-6">
-          <div className={`card ${theme === 'dark' ? 'bg-dark text-light' : ''}`}>
+          <div className="card">
             <div className="card-body">
               <p><strong>Official Name:</strong> {country.name.official}</p>
               <p><strong>Code:</strong> {country.cca2}</p>
@@ -133,7 +127,7 @@ function CountryDetail() {
                     Remove from Favorites
                   </button>
                 ) : (
-                  <button onClick={handleAddFavorite} className="btn btn-primary">
+                  <button onClick={handleAddFavorite} className="btn btn-success">
                     Add to Favorites
                   </button>
                 )}
@@ -142,7 +136,7 @@ function CountryDetail() {
                     href={googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-info"
+                    className="btn btn-primary"
                   >
                     View Country on Google Maps
                   </a>
@@ -157,4 +151,4 @@ function CountryDetail() {
   );
 }
 
-export default CountryDetail; 
+export default CountryDetail;

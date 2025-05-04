@@ -308,8 +308,14 @@ const Home = () => {
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleAddFavorite(country.cca2, country.name.common)}
-                        className="btn btn-primary"
+                        onClick={() => {
+                          if (!token) {
+                            toast.warning('Please log in to add favorites');
+                            return;
+                          }
+                          handleAddFavorite(country.cca2, country.name.common);
+                        }}
+                        className={token ? "btn btn-success" : "btn btn-primary"}
                       >
                         Add to Favorites
                       </button>
