@@ -13,7 +13,7 @@ function Favorites() {
   const [error, setError] = useState('');
   const [allCountries, setAllCountries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [matchingCountries, setMatchingCountries] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const countriesPerPage = 9;
   const token = localStorage.getItem('token');
 
@@ -79,21 +79,6 @@ function Favorites() {
     fetchAllCountries();
   }, []);
 
-  // Add new useEffect for matching countries
-  useEffect(() => {
-    if (countryCode.trim() === '') {
-      setMatchingCountries([]);
-      return;
-    }
-
-    const searchTerm = countryCode.toLowerCase();
-    const matches = allCountries.filter(country => 
-      country.name.common.toLowerCase().includes(searchTerm) ||
-      country.cca2.toLowerCase().includes(searchTerm)
-    );
-    setMatchingCountries(matches.slice(0, 5)); // Show only top 5 matches
-  }, [countryCode, allCountries]);
-
   // Add country to favorites
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -138,11 +123,20 @@ function Favorites() {
     }
   };
 
-  // Calculate pagination
+  // Filter countries based on search term
+  const filteredCountries = allCountries.filter(country => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      country.name.common.toLowerCase().includes(searchLower) ||
+      country.cca2.toLowerCase().includes(searchLower)
+    );
+  });
+
+  // Calculate pagination for filtered countries
   const indexOfLastCountry = currentPage * countriesPerPage;
   const indexOfFirstCountry = indexOfLastCountry - countriesPerPage;
-  const currentCountries = allCountries.slice(indexOfFirstCountry, indexOfLastCountry);
-  const totalPages = Math.ceil(allCountries.length / countriesPerPage);
+  const currentCountries = filteredCountries.slice(indexOfFirstCountry, indexOfLastCountry);
+  const totalPages = Math.ceil(filteredCountries.length / countriesPerPage);
 
   if (!token) {
     toast.warning('Please log in to view favorites.');
@@ -210,45 +204,34 @@ function Favorites() {
       <h3 className="text-center mb-3">Add Your Favorite Country Below!</h3>
       
       <form onSubmit={handleAdd} className="mb-4 d-flex gap-2">
-        <div className="position-relative flex-grow-1">
-          <input
-            type="text"
-            value={countryCode}
-            onChange={(e) => setCountryCode(e.target.value)}
-            placeholder="Enter country code (e.g., CA) or common name"
-            className="form-control"
-          />
-          {matchingCountries.length > 0 && (
-            <div className="position-absolute w-100 mt-1 bg-white border rounded shadow-sm" style={{ zIndex: 1000 }}>
-              {matchingCountries.map(country => (
-                <div
-                  key={country.cca2}
-                  className="p-2 border-bottom hover-bg-light cursor-pointer"
-                  onClick={() => {
-                    setCountryCode(country.name.common);
-                    setMatchingCountries([]);
-                  }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <div className="d-flex align-items-center">
-                    <img
-                      src={country.flags.png}
-                      alt={`${country.name.common} flag`}
-                      style={{ width: '30px', height: '20px', marginRight: '10px' }}
-                    />
-                    <span>{country.name.common} ({country.cca2})</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <input
+          type="text"
+          value={countryCode}
+          onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
+          placeholder="Enter country code (e.g., CA) or common name"
+          className="form-control"
+        />
         <button type="submit" className="btn btn-primary">
           Add
         </button>
       </form>
 
       <h2 className="text-center my-5">All Countries</h2>
+      
+      {/* Search Bar */}
+      <div className="mb-4">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="🔍 Search countries by name or code..."
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1); // Reset to first page when searching
+          }}
+        />
+      </div>
+
       <div className="row">
         {currentCountries.length === 0 ? (
           <p className="text-center">No countries found.</p>
