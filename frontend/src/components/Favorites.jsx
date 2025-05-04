@@ -13,6 +13,7 @@ function Favorites() {
   const [error, setError] = useState('');
   const [allCountries, setAllCountries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRegion, setSelectedRegion] = useState('');
   const countriesPerPage = 9;
   const token = localStorage.getItem('token');
 
@@ -122,13 +123,16 @@ function Favorites() {
     }
   };
 
-  // Filter countries based on search term
+  // Get unique regions
+  const regions = [...new Set(allCountries.map(country => country.region))].filter(Boolean).sort();
+
+  // Filter countries based on search term and region
   const filteredCountries = allCountries.filter(country => {
     const searchLower = countryCode.toLowerCase();
-    return (
-      country.name.common.toLowerCase().includes(searchLower) ||
-      country.cca2.toLowerCase().includes(searchLower)
-    );
+    const matchesSearch = country.name.common.toLowerCase().includes(searchLower) ||
+                         country.cca2.toLowerCase().includes(searchLower);
+    const matchesRegion = !selectedRegion || country.region === selectedRegion;
+    return matchesSearch && matchesRegion;
   });
 
   // Calculate pagination for filtered countries
@@ -202,21 +206,42 @@ function Favorites() {
 
       <h3 className="text-center mb-3">Add Your Favorite Country Below!</h3>
       
-      <form onSubmit={handleAdd} className="mb-4 d-flex gap-2">
-        <input
-          type="text"
-          value={countryCode}
-          onChange={(e) => {
-            setCountryCode(e.target.value.toUpperCase());
-            setCurrentPage(1); // Reset to first page when searching
-          }}
-          placeholder="🔍 Search or add country by name or code (e.g., CA)"
-          className="form-control"
-        />
-        <button type="submit" className="btn btn-primary">
-          Add
-        </button>
-      </form>
+      <div className="row mb-4">
+        <div className="col-md-6">
+          <form onSubmit={handleAdd} className="d-flex gap-2">
+            <input
+              type="text"
+              value={countryCode}
+              onChange={(e) => {
+                setCountryCode(e.target.value.toUpperCase());
+                setCurrentPage(1);
+              }}
+              placeholder="🔍 Search or add country by name or code (e.g., CA)"
+              className="form-control"
+            />
+            <button type="submit" className="btn btn-primary">
+              Add
+            </button>
+          </form>
+        </div>
+        <div className="col-md-6">
+          <select
+            className="form-select"
+            value={selectedRegion}
+            onChange={(e) => {
+              setSelectedRegion(e.target.value);
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">🌍 All Regions</option>
+            {regions.map(region => (
+              <option key={region} value={region}>
+                {region}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       <h2 className="text-center my-5">All Countries</h2>
       
