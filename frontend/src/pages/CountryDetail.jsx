@@ -137,31 +137,22 @@ function CountryDetail() {
                   .join(', ') || 'N/A'}
               </p>
               <div className="d-flex gap-2">
-                {token ? (
-                  isFavorite ? (
-                    <button
-                      onClick={handleRemoveFavorite}
-                      className="btn btn-danger"
-                    >
-                      Remove from Favorites
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleAddFavorite}
-                      className="btn btn-success"
-                    >
-                      Add to Favorites
-                    </button>
-                  )
+                {isFavorite ? (
+                  <button onClick={handleRemoveFavorite} className="btn btn-danger">
+                    Remove from Favorites
+                  </button>
                 ) : (
                   <button
                     onClick={() => {
-                      toast.warning('Please log in to manage favorites');
-                      navigate('/login');
+                      if (!token) {
+                        toast.warning('Please log in to add favorites');
+                        return;
+                      }
+                      handleAddFavorite();
                     }}
-                    className="btn btn-primary"
+                    className="btn btn-success"
                   >
-                    Log in to Add Favorites
+                    Add to Favorites
                   </button>
                 )}
                 {googleMapsUrl && (
@@ -171,7 +162,7 @@ function CountryDetail() {
                     rel="noopener noreferrer"
                     className="btn btn-primary"
                   >
-                    View on Google Maps
+                    View Country on Google Maps
                   </a>
                 )}
               </div>
