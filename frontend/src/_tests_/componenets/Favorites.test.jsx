@@ -4,15 +4,16 @@ import Favorites from '../../components/Favorites';
 import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { AuthContext } from '../../AuthContext';
 
 // Mock react-toastify
 vi.mock('react-toastify', () => ({
-  toast: {
-    error: vi.fn(),
-    success: vi.fn(),
-    warning: vi.fn(),
-  },
-  ToastContainer: () => <div data-testid="toast-container" />,
+    toast: {
+        error: vi.fn(),
+        success: vi.fn(),
+        warning: vi.fn(),
+    },
+    ToastContainer: () => <div data-testid="toast-container" />,
 }));
 
 // Mock axios
@@ -20,49 +21,54 @@ vi.mock('axios');
 
 const mockFavorites = ['US', 'CA'];
 const mockCountryDetails = [
-  {
-    name: { common: 'United States' },
-    flags: { png: 'us.png' },
-    population: 331000000,
-    region: 'Americas',
-    capital: ['Washington D.C.'],
-    cca2: 'US',
-  },
-  {
-    name: { common: 'Canada' },
-    flags: { png: 'ca.png' },
-    population: 38000000,
-    region: 'Americas',
-    capital: ['Ottawa'],
-    cca2: 'CA',
-  },
+    {
+        name: { common: 'United States' },
+        flags: { png: 'us.png' },
+        population: 331000000,
+        region: 'Americas',
+        capital: ['Washington D.C.'],
+        cca2: 'US',
+    },
+    {
+        name: { common: 'Canada' },
+        flags: { png: 'ca.png' },
+        population: 38000000,
+        region: 'Americas',
+        capital: ['Ottawa'],
+        cca2: 'CA',
+    },
 ];
 
 const mockAllCountries = [
-  {
-    name: { common: 'France' },
-    flags: { png: 'fr.png' },
-    population: 67000000,
-    region: 'Europe',
-    capital: ['Paris'],
-    cca2: 'FR',
-  },
-  ...mockCountryDetails,
+    {
+        name: { common: 'France' },
+        flags: { png: 'fr.png' },
+        population: 67000000,
+        region: 'Europe',
+        capital: ['Paris'],
+        cca2: 'FR',
+    },
+    ...mockCountryDetails,
 ];
 
-function renderWithRouter(ui) {
-  return render(<BrowserRouter>{ui}</BrowserRouter>);
+// Helper to wrap with AuthContext and Router
+function renderWithRouter(ui, authValue = { isLoggedIn: true }) {
+    return render(
+        <AuthContext.Provider value={authValue}>
+            <BrowserRouter>{ui}</BrowserRouter>
+        </AuthContext.Provider>
+    );
 }
 
 beforeEach(() => {
-  localStorage.setItem('token', 'test-token');
-  axios.get.mockReset();
-  axios.post.mockReset();
-  axios.delete.mockReset();
+    localStorage.setItem('token', 'test-token');
+    axios.get.mockReset();
+    axios.post.mockReset();
+    axios.delete.mockReset();
 });
 
 afterEach(() => {
-  localStorage.clear();
+    localStorage.clear();
 });
 
 test('renders favorites and all countries', async () => {
@@ -74,15 +80,11 @@ test('renders favorites and all countries', async () => {
 
     renderWithRouter(<Favorites />);
 
-    // Wait for favorites to load
     expect(await screen.findByText('My Favorite Countries')).toBeInTheDocument();
     expect(await screen.findByText('United States')).toBeInTheDocument();
     expect(await screen.findByText('Canada')).toBeInTheDocument();
-
-    // Wait for all countries section to appear
     expect(await screen.findByText('All Countries')).toBeInTheDocument();
 
-    // Wait for France to appear in the all countries section
     await waitFor(() => {
         const franceTitle = screen.getByText('France');
         expect(franceTitle).toBeInTheDocument();
@@ -104,7 +106,7 @@ test('can add a country to favorites', async () => {
     axios.post.mockResolvedValueOnce({ data: { favorites: ['US'] } }); // add to favorites
 
     renderWithRouter(<Favorites />);
-    const input = await screen.findByPlaceholderText(/Enter country code/i);
+    const input = await screen.findByPlaceholderText(/Search or add country by name or code/i);
     fireEvent.change(input, { target: { value: 'United States' } });
     fireEvent.click(screen.getByText('Add'));
 
@@ -155,7 +157,7 @@ test('displays error if adding favorite fails', async () => {
     axios.post.mockRejectedValueOnce({ response: { data: { message: 'Already exists' } } });
 
     renderWithRouter(<Favorites />);
-    const input = await screen.findByPlaceholderText(/Enter country code/i);
+    const input = await screen.findByPlaceholderText(/Search or add country by name or code/i);
     fireEvent.change(input, { target: { value: 'United States' } });
     fireEvent.click(screen.getByText('Add'));
 
@@ -178,7 +180,6 @@ test('displays error if removing favorite fails', async () => {
 });
 
 test('pagination controls work for all countries', async () => {
-    // Create 20 mock countries for pagination
     const manyCountries = Array.from({ length: 20 }, (_, i) => ({
         name: { common: `Country${i + 1}` },
         flags: { png: `flag${i + 1}.png` },
@@ -195,11 +196,9 @@ test('pagination controls work for all countries', async () => {
     renderWithRouter(<Favorites />);
     expect(await screen.findByText('Country1')).toBeInTheDocument();
 
-    // Click next page
     const nextBtn = await screen.findByText('Next');
     fireEvent.click(nextBtn);
 
-    // Wait for a country from the second page (update this to match your UI)
     expect(await screen.findByText('Country18')).toBeInTheDocument();
 });
 
@@ -209,7 +208,7 @@ test('Add button uppercases input value for country code', async () => {
         .mockResolvedValueOnce({ data: [] });
 
     renderWithRouter(<Favorites />);
-    const input = await screen.findByPlaceholderText(/Enter country code/i);
+    const input = await screen.findByPlaceholderText(/Search or add country by name or code/i);
     fireEvent.change(input, { target: { value: 'ca' } });
     expect(input.value).toBe('CA');
 });
@@ -220,7 +219,7 @@ test('Add button does not submit if input is empty', async () => {
         .mockResolvedValueOnce({ data: [] });
 
     renderWithRouter(<Favorites />);
-    const input = await screen.findByPlaceholderText(/Enter country code/i);
+    const input = await screen.findByPlaceholderText(/Search or add country by name or code/i);
     await act(async () => {
         fireEvent.change(input, { target: { value: '' } });
         fireEvent.click(screen.getByText('Add'));
@@ -250,7 +249,6 @@ test('shows loading state for Add to Favorites button if needed', async () => {
     await act(async () => {
         fireEvent.click(addBtn);
     });
-    // Optionally, check for disabled state or spinner if implemented
     await act(async () => {
         resolvePost({ data: { favorites: ['C4'] } });
     });
@@ -368,20 +366,19 @@ test('pagination: clicking page number navigates to correct page', async () => {
 
     renderWithRouter(<Favorites />);
     expect(await screen.findByText('Country1')).toBeInTheDocument();
-    // Find the page 2 button by text
     const page2Btn = await screen.findByRole('button', { name: '2' });
     fireEvent.click(page2Btn);
     await waitFor(() => {
-      expect(screen.getByText('Country18')).toBeInTheDocument();
-      expect(screen.getByText('Country19')).toBeInTheDocument();
-      expect(screen.getByText('Country2')).toBeInTheDocument();
-      expect(screen.getByText('Country20')).toBeInTheDocument();
-      expect(screen.getByText('Country3')).toBeInTheDocument();
-      expect(screen.getByText('Country4')).toBeInTheDocument();
-      expect(screen.getByText('Country5')).toBeInTheDocument();
-      expect(screen.getByText('Country6')).toBeInTheDocument();
-      expect(screen.getByText('Country7')).toBeInTheDocument();
-      expect(screen.queryByText('Country1')).not.toBeInTheDocument();
+        expect(screen.getByText('Country18')).toBeInTheDocument();
+        expect(screen.getByText('Country19')).toBeInTheDocument();
+        expect(screen.getByText('Country2')).toBeInTheDocument();
+        expect(screen.getByText('Country20')).toBeInTheDocument();
+        expect(screen.getByText('Country3')).toBeInTheDocument();
+        expect(screen.getByText('Country4')).toBeInTheDocument();
+        expect(screen.getByText('Country5')).toBeInTheDocument();
+        expect(screen.getByText('Country6')).toBeInTheDocument();
+        expect(screen.getByText('Country7')).toBeInTheDocument();
+        expect(screen.queryByText('Country1')).not.toBeInTheDocument();
     }, { timeout: 3000 });
 });
 
@@ -400,12 +397,106 @@ test('pagination: Previous/Next buttons are disabled on first/last page', async 
         .mockResolvedValueOnce({ data: manyCountries });
 
     renderWithRouter(<Favorites />);
-    // Previous should be disabled on first page
     const prevBtn = await screen.findByRole('button', { name: 'Previous' });
     expect(prevBtn.closest('li')).toHaveClass('disabled');
-    // Go to last page
     const page2Btn = await screen.findByRole('button', { name: '2' });
     fireEvent.click(page2Btn);
     const nextBtn = await screen.findByRole('button', { name: 'Next' });
     expect(nextBtn.closest('li')).toHaveClass('disabled');
+});
+
+// --- NEW TESTS BELOW ---
+
+test('filters countries by region', async () => {
+    axios.get
+        .mockResolvedValueOnce({ data: { favorites: [] } })
+        .mockResolvedValueOnce({ data: mockAllCountries });
+
+    renderWithRouter(<Favorites />);
+    const select = await screen.findByRole('combobox');
+    fireEvent.change(select, { target: { value: 'Europe' } });
+    expect(await screen.findByText('France')).toBeInTheDocument();
+    expect(screen.queryByText('United States')).not.toBeInTheDocument();
+});
+
+test('search filters countries by name', async () => {
+    axios.get
+        .mockResolvedValueOnce({ data: { favorites: [] } })
+        .mockResolvedValueOnce({ data: mockAllCountries });
+
+    renderWithRouter(<Favorites />);
+    const input = await screen.findByPlaceholderText(/Search or add country by name or code/i);
+    fireEvent.change(input, { target: { value: 'fran' } });
+    expect(await screen.findByText('France')).toBeInTheDocument();
+    expect(screen.queryByText('Canada')).not.toBeInTheDocument();
+});
+
+test('search filters countries by code', async () => {
+    axios.get
+        .mockResolvedValueOnce({ data: { favorites: [] } })
+        .mockResolvedValueOnce({ data: mockAllCountries });
+
+    renderWithRouter(<Favorites />);
+    const input = await screen.findByPlaceholderText(/Search or add country by name or code/i);
+    fireEvent.change(input, { target: { value: 'CA' } });
+    expect(await screen.findByText('Canada')).toBeInTheDocument();
+    expect(screen.queryByText('France')).not.toBeInTheDocument();
+});
+
+test('shows "No countries found" if search yields no results', async () => {
+    axios.get
+        .mockResolvedValueOnce({ data: { favorites: [] } })
+        .mockResolvedValueOnce({ data: mockAllCountries });
+
+    renderWithRouter(<Favorites />);
+    const input = await screen.findByPlaceholderText(/Search or add country by name or code/i);
+    fireEvent.change(input, { target: { value: 'ZZZ' } });
+    expect(await screen.findByText('No countries found.')).toBeInTheDocument();
+});
+
+test('shows "No favorite countries added yet." if favorites is empty', async () => {
+    axios.get
+        .mockResolvedValueOnce({ data: { favorites: [] } })
+        .mockResolvedValueOnce({ data: mockAllCountries });
+
+    renderWithRouter(<Favorites />);
+    expect(await screen.findByText('No favorite countries added yet.')).toBeInTheDocument();
+});
+
+test('Add to Favorites button is not shown for countries already in favorites', async () => {
+    axios.get
+        .mockResolvedValueOnce({ data: { favorites: ['CA'] } })
+        .mockResolvedValueOnce({ data: [mockCountryDetails[1], mockCountryDetails[0]] }) // CA, US details
+        .mockResolvedValueOnce({ data: [mockCountryDetails[0]] }) // US details
+        .mockResolvedValueOnce({ data: mockAllCountries });
+
+    renderWithRouter(<Favorites />);
+    expect(await screen.findByText('Canada')).toBeInTheDocument();
+    const removeBtn = await screen.findAllByText('Remove from Favorites');
+    expect(removeBtn.length).toBeGreaterThan(0);
+    expect(screen.queryByText('Add to Favorites')).toBeInTheDocument();
+});
+
+test('handles missing capital gracefully', async () => {
+    const countries = [
+        {
+            name: { common: 'NowhereLand' },
+            flags: { png: 'nowhere.png' },
+            population: 0,
+            region: 'Nowhere',
+            capital: undefined,
+            cca2: 'NW',
+        },
+    ];
+    axios.get
+        .mockResolvedValueOnce({ data: { favorites: [] } })
+        .mockResolvedValueOnce({ data: countries });
+
+    renderWithRouter(<Favorites />);
+    expect(await screen.findByText('NowhereLand')).toBeInTheDocument();
+    // Look for the capital line containing N/A
+    const capitalLines = screen.getAllByText((content, node) =>
+        node.textContent.includes('Capital:') && node.textContent.includes('N/A')
+    );
+    expect(capitalLines.length).toBeGreaterThan(0);
 });

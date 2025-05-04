@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest'; // Import `vi` for mocking
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeContext } from '../../ThemeContext';
+import { AuthContext } from '../../AuthContext'; // <-- import AuthContext
 import Footer from '../../components/Footer';
 
 describe('Footer Component', () => {
@@ -11,11 +12,13 @@ describe('Footer Component', () => {
     const mockTheme = 'light';
 
     render(
-      <ThemeContext.Provider value={{ theme: mockTheme, toggleTheme: mockToggleTheme }}>
-        <BrowserRouter>
-          <Footer />
-        </BrowserRouter>
-      </ThemeContext.Provider>
+      <AuthContext.Provider value={{ isLoggedIn: false }}>
+        <ThemeContext.Provider value={{ theme: mockTheme, toggleTheme: mockToggleTheme }}>
+          <BrowserRouter>
+            <Footer />
+          </BrowserRouter>
+        </ThemeContext.Provider>
+      </AuthContext.Provider>
     );
 
     expect(screen.getByText(/GeoExplorer/i)).toBeInTheDocument();
