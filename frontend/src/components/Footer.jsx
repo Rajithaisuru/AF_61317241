@@ -1,12 +1,11 @@
-import React from 'react';
-
-// src/components/Footer.jsx
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ThemeContext } from '../ThemeContext';
+import { AuthContext } from '../AuthContext';
 
 function Footer() {
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { isLoggedIn } = useContext(AuthContext);
   const [geoFact, setGeoFact] = useState('');
   const [locationName, setLocationName] = useState('Loading...');
 
@@ -46,8 +45,12 @@ function Footer() {
         <div className="d-flex justify-content-center gap-3 mb-3">
           <Link to="/" className="text-decoration-none">Home</Link>
           <Link to="/countries" className="text-decoration-none">Comparison</Link>
-          <Link to="/favorites" className="text-decoration-none">Favorites</Link>
-          <Link to="/profile" className="text-decoration-none">Profile</Link>
+          {isLoggedIn && (
+            <>
+              <Link to="/favorites" className="text-decoration-none">Favorites</Link>
+              <Link to="/profile" className="text-decoration-none">Profile</Link>
+            </>
+          )}
         </div>
 
         <button
