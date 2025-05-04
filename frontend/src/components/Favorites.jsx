@@ -83,12 +83,19 @@ function Favorites() {
   const handleAdd = async (e) => {
     e.preventDefault();
     try {
-      // Fetch country details by common name
+      // Fetch country details by common name or code
       const countryResponse = await axios.get(
         `https://restcountries.com/v3.1/name/${countryCode}`
       );
       const country = countryResponse.data[0];
-      const countryAlphaCode = country.cca2; // Get the alpha-2 code of the country
+      const countryAlphaCode = country.cca2;
+
+      // Prevent adding if already in favorites
+      if (favorites.includes(countryAlphaCode)) {
+        toast.warning(`${country.name.common} is already in your favorites!`);
+        setCountryCode('');
+        return;
+      }
 
       // Add the country to favorites using its alpha-2 code
       const response = await axios.post(
