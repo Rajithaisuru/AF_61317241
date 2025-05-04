@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const Register = () => {
@@ -148,7 +148,7 @@ const Register = () => {
           </button>
         </form>
         <div className="login-link mt-3">
-          <p>Did you have an account? <a href="/login">Login</a></p>
+          <p>Did you have an account? <Link to="/login">Login</Link></p>
         </div>
       </div>
     </div>
