@@ -272,15 +272,27 @@ function Favorites() {
       </div>
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="d-flex justify-content-center mt-4">
-          <nav>
-            {/* For large screens: show all page numbers */}
-            <ul className="pagination d-none d-sm-flex">
+        <div className="d-flex justify-content-center align-items-center mt-4 flex-wrap">
+          <nav className="w-100">
+            <ul className="pagination pagination-sm pagination-md pagination-lg flex-wrap justify-content-center mb-0" 
+                style={{ 
+                  maxWidth: '100%',
+                  overflowX: 'auto',
+                  flexWrap: 'wrap',
+                  gap: '4px'
+                }}>
+              {/* Previous Button */}
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                <button 
+                  className="page-link" 
+                  onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
                   Previous
                 </button>
               </li>
+
+              {/* Page Numbers */}
               {Array.from({ length: totalPages }, (_, index) => (
                 <li
                   key={index}
@@ -291,26 +303,14 @@ function Favorites() {
                   </button>
                 </li>
               ))}
+
+              {/* Next Button */}
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
-                  Next
-                </button>
-              </li>
-            </ul>
-            {/* For small screens: show only previous, current, next */}
-            <ul className="pagination d-flex d-sm-none">
-              <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
-                  Previous
-                </button>
-              </li>
-              <li className="page-item active">
-                <span className="page-link">
-                  {currentPage} / {totalPages}
-                </span>
-              </li>
-              <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                <button 
+                  className="page-link" 
+                  onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
                   Next
                 </button>
               </li>
