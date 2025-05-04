@@ -13,7 +13,6 @@ function Favorites() {
   const [error, setError] = useState('');
   const [allCountries, setAllCountries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
   const countriesPerPage = 9;
   const token = localStorage.getItem('token');
 
@@ -125,7 +124,7 @@ function Favorites() {
 
   // Filter countries based on search term
   const filteredCountries = allCountries.filter(country => {
-    const searchLower = searchTerm.toLowerCase();
+    const searchLower = countryCode.toLowerCase();
     return (
       country.name.common.toLowerCase().includes(searchLower) ||
       country.cca2.toLowerCase().includes(searchLower)
@@ -207,8 +206,11 @@ function Favorites() {
         <input
           type="text"
           value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
-          placeholder="Enter country code (e.g., CA) or common name"
+          onChange={(e) => {
+            setCountryCode(e.target.value.toUpperCase());
+            setCurrentPage(1); // Reset to first page when searching
+          }}
+          placeholder="🔍 Search or add country by name or code (e.g., CA)"
           className="form-control"
         />
         <button type="submit" className="btn btn-primary">
@@ -218,20 +220,6 @@ function Favorites() {
 
       <h2 className="text-center my-5">All Countries</h2>
       
-      {/* Search Bar */}
-      <div className="mb-4">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="🔍 Search countries by name or code..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setCurrentPage(1); // Reset to first page when searching
-          }}
-        />
-      </div>
-
       <div className="row">
         {currentCountries.length === 0 ? (
           <p className="text-center">No countries found.</p>
