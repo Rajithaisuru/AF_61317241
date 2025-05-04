@@ -13,6 +13,7 @@ function Favorites() {
   const [error, setError] = useState('');
   const [allCountries, setAllCountries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [matchingCountries, setMatchingCountries] = useState([]);
   const countriesPerPage = 9;
   const token = localStorage.getItem('token');
 
@@ -77,6 +78,21 @@ function Favorites() {
     };
     fetchAllCountries();
   }, []);
+
+  // Add new useEffect for matching countries
+  useEffect(() => {
+    if (countryCode.trim() === '') {
+      setMatchingCountries([]);
+      return;
+    }
+
+    const searchTerm = countryCode.toLowerCase();
+    const matches = allCountries.filter(country => 
+      country.name.common.toLowerCase().includes(searchTerm) ||
+      country.cca2.toLowerCase().includes(searchTerm)
+    );
+    setMatchingCountries(matches.slice(0, 5)); // Show only top 5 matches
+  }, [countryCode, allCountries]);
 
   // Add country to favorites
   const handleAdd = async (e) => {
@@ -194,13 +210,39 @@ function Favorites() {
       <h3 className="text-center mb-3">Add Your Favorite Country Below!</h3>
       
       <form onSubmit={handleAdd} className="mb-4 d-flex gap-2">
-        <input
-          type="text"
-          value={countryCode}
-          onChange={(e) => setCountryCode(e.target.value.toUpperCase())}
-          placeholder="Enter country code (e.g., CA) or common name"
-          className="form-control"
-        />
+        <div className="position-relative flex-grow-1">
+          <input
+            type="text"
+            value={countryCode}
+            onChange={(e) => setCountryCode(e.target.value)}
+            placeholder="Enter country code (e.g., CA) or common name"
+            className="form-control"
+          />
+          {matchingCountries.length > 0 && (
+            <div className="position-absolute w-100 mt-1 bg-white border rounded shadow-sm" style={{ zIndex: 1000 }}>
+              {matchingCountries.map(country => (
+                <div
+                  key={country.cca2}
+                  className="p-2 border-bottom hover-bg-light cursor-pointer"
+                  onClick={() => {
+                    setCountryCode(country.name.common);
+                    setMatchingCountries([]);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="d-flex align-items-center">
+                    <img
+                      src={country.flags.png}
+                      alt={`${country.name.common} flag`}
+                      style={{ width: '30px', height: '20px', marginRight: '10px' }}
+                    />
+                    <span>{country.name.common} ({country.cca2})</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <button type="submit" className="btn btn-primary">
           Add
         </button>
