@@ -9,13 +9,22 @@ import { API_ENDPOINTS } from '../config';
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
   const [countryDetails, setCountryDetails] = useState({});
-  const [countryCode, setCountryCode] = useState('');
+  const [countryCode, setCountryCode] = useState(localStorage.getItem('searchTerm') || ''); // Load search term from localStorage
   const [error, setError] = useState('');
   const [allCountries, setAllCountries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRegion, setSelectedRegion] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState(localStorage.getItem('region') || ''); // Load region from localStorage
   const countriesPerPage = 9;
   const token = localStorage.getItem('token');
+
+  // Save search term and region to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('searchTerm', countryCode);
+  }, [countryCode]);
+
+  useEffect(() => {
+    localStorage.setItem('region', selectedRegion);
+  }, [selectedRegion]);
 
   // Fetch favorite countries
   useEffect(() => {

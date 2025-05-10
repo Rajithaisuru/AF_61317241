@@ -49,8 +49,8 @@ function MapController({ searchTerm, region, countries }) {
 const Home = () => {
   const [countries, setCountries] = useState([]);
   const [filteredCountries, setFilteredCountries] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [region, setRegion] = useState('');
+  const [searchTerm, setSearchTerm] = useState(localStorage.getItem('searchTerm') || '');
+  const [region, setRegion] = useState(localStorage.getItem('region') || '');
   const [error, setError] = useState('');
   const [favorites, setFavorites] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -67,7 +67,13 @@ const Home = () => {
 
   const handleSearch = debounce((value) => {
     setSearchTerm(value);
+    localStorage.setItem('searchTerm', value); // Save search term to localStorage
   }, 300);
+
+  const handleRegionChange = (value) => {
+    setRegion(value);
+    localStorage.setItem('region', value); // Save region to localStorage
+  };
 
   useEffect(() => {
     const fetchCountries = async () => {
@@ -249,14 +255,15 @@ const Home = () => {
             type="text"
             className="form-control search-bar"
             placeholder="🔍 Search countries..."
+            value={searchTerm} // Show search term in the input field
             onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
         <div className="col-md-6 mb-3">
           <select
             className="form-select filter-dropdown"
-            value={region}
-            onChange={(e) => setRegion(e.target.value)}
+            value={region} // Show selected region in the dropdown
+            onChange={(e) => handleRegionChange(e.target.value)}
           >
             <option value="">🌍 All Regions</option>
             {regions.map((reg) => (
@@ -335,25 +342,16 @@ const Home = () => {
       {totalPages > 1 && (
         <div className="d-flex justify-content-center align-items-center mt-4 flex-wrap">
           <nav className="w-100">
-            <ul className="pagination pagination-sm pagination-md pagination-lg flex-wrap justify-content-center mb-0" 
-                style={{ 
-                  maxWidth: '100%',
-                  overflowX: 'auto',
-                  flexWrap: 'wrap',
-                  gap: '4px'
-                }}>
-              {/* Previous Button */}
+            <ul className="pagination pagination-sm pagination-md pagination-lg flex-wrap justify-content-center mb-0">
               <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+                <button
+                  className="page-link"
                   onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
                 >
                   Previous
                 </button>
               </li>
-
-              {/* Page Numbers */}
               {Array.from({ length: totalPages }, (_, index) => (
                 <li
                   key={index}
@@ -364,11 +362,9 @@ const Home = () => {
                   </button>
                 </li>
               ))}
-
-              {/* Next Button */}
               <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                <button 
-                  className="page-link" 
+                <button
+                  className="page-link"
                   onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
                 >

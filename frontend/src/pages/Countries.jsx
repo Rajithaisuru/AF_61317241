@@ -5,9 +5,15 @@ import { Link } from 'react-router-dom';
 const Countries = () => {
   const [countries, setCountries] = useState([]);
   const [error, setError] = useState('');
-  const [selectedCountries, setSelectedCountries] = useState([]);
-  const [comparisonData, setComparisonData] = useState([]);
-  const [isComparing, setIsComparing] = useState(false);
+  const [selectedCountries, setSelectedCountries] = useState(
+    JSON.parse(localStorage.getItem('selectedCountries')) || []
+  ); // Load selected countries from localStorage
+  const [comparisonData, setComparisonData] = useState(
+    JSON.parse(localStorage.getItem('comparisonData')) || []
+  ); // Load comparison data from localStorage
+  const [isComparing, setIsComparing] = useState(
+    JSON.parse(localStorage.getItem('isComparing')) || false
+  ); // Load comparison state from localStorage
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [region, setRegion] = useState('');
@@ -29,7 +35,13 @@ const Countries = () => {
       }
     })();
   }, []);
-  
+
+  // Save selected countries, comparison data, and comparison state to localStorage
+  useEffect(() => {
+    localStorage.setItem('selectedCountries', JSON.stringify(selectedCountries));
+    localStorage.setItem('comparisonData', JSON.stringify(comparisonData));
+    localStorage.setItem('isComparing', JSON.stringify(isComparing));
+  }, [selectedCountries, comparisonData, isComparing]);
 
   // Memoize regions
   const regions = useMemo(
